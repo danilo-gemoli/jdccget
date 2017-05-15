@@ -1,0 +1,21 @@
+E' stata aggiunta la libreria PircBotx direttamente come sorgente per debuggare il problema
+della ripresa del download.
+
+Di conseguenza sono state aggiunte due nuove librerie per far compilare il tutto (non ce ne sarebbe
+stato bisogno se si fosse importato normalmente il jar):
+    * lombok + plugin lombok per intellij + abilitato il processamento delle annotazioni in
+        "Settings > Build > Compiler > Annotation Processors"
+    * jsr305-3.0.1 per javax.annotation
+
+
+
+TEST PER SIMULARE ERRORI DI CONNESSIONE:
+
+porta dns: 53 udp
+
+bloccare una porta in uscita con iptables
+iptables -A OUTPUT -p udp --dport 53 -j DROP
+iptables -A INPUT -p udp --dport 53 -j DROP
+
+ripristinare la tabella di output
+iptables -F

@@ -1,0 +1,27 @@
+###############################################
+###############################################
+###### FILE DI CONFIGURAZIONE DI jdcc-get #####
+###############################################
+###############################################
+# LE LINEE CHE INIZIANO CON "#" SONO TRATTATE COME COMMENTI E QUINDI IGNORATE.
+# LE LINEE VUOTE SONO IGNORATE.
+# LE LINEE CHE CONTENGONO SOLO SPAZI SONO IGNORATE.
+
+
+server-port=6667
+nickname=jdcc-test
+
+#server-hostname=irc.crocmax.net
+#channel=#cm-plus
+#bot-name=CM|SiNgOLi|MP3|03
+#pack-number=101
+
+server-hostname=irc.openjoke.biz
+channel=#V3L0X
+bot-name=V3L0X|CiNeMa|01
+pack-number=65
+
+hi-channel-msg=hi
+
+resume-download=true
+download-path=/home/danilo/Downloads/jdccget/

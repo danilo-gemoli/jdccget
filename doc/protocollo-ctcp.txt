@@ -1,0 +1,10 @@
+*** INTRODUZIONE ***
+Il protocollo ctcp (client to client protocol) è un protocollo che permette ai client irc di scambiarsi messaggi.
+E' implementato tramite il comando PRIVMSG di irc.
+
+*** STRUTTURA DI UN MESSAGGIO ***
+
+PRIVMSG 0x01CTCP [COMANDO CTCP]0x01
+
+Si tratta quindi di un normale messaggio PRIVMSG i quali primo e ultimo byte sono i caratteri ascii corrispondenti
+al numero hex 0x01.

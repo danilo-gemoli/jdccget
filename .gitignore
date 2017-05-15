@@ -1,0 +1,8 @@
+jdccget.iml
+.idea/
+3rd-libs/
+deploy-package/
+logs/
+out/
+src/META-INF/
+src/org/*
