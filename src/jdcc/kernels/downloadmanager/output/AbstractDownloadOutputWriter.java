@@ -1,5 +1,7 @@
 package jdcc.kernels.downloadmanager.output;
 
+import jdcc.kernels.downloadmanager.statistics.Size;
+
 import java.util.concurrent.TimeUnit;
 
 abstract class AbstractDownloadOutputWriter implements DownloadOutputWriter {
@@ -8,15 +10,12 @@ abstract class AbstractDownloadOutputWriter implements DownloadOutputWriter {
     protected String botName;
     protected String fileName = "";
     protected int packNum;
-    protected long bytesReceived;
-    protected long fileSize;
-    protected long downloadStartTime;
-    protected long fileStartLength = 0;
-
-    /***
-     * Totale bytes trasferiti fino ad ora.
-     */
-    protected long totBytesTransferred = 0;
+    protected int downloadPercentage;
+    protected float downloadSpeed;
+    protected String sizeMeasurementUnit;
+    protected long remainingTime;
+    protected Size downloadedSize;
+    protected Size fileSize;
     /***
      * L'ultima volta che è stato stampato lo stato del download.
      */
@@ -26,14 +25,39 @@ abstract class AbstractDownloadOutputWriter implements DownloadOutputWriter {
      */
     protected long downloadInfoDumpRefreshRate = 1000;
 
+    protected long remainingDays;
+    protected long remainingHours;
+    protected long remainingMinutes;
+    protected long remainingSeconds;
+
     @Override
-    public void setStartTime(long startTime) {
-        this.downloadStartTime = startTime;
+    public void setDownloadedSize(Size remainingSize) {
+        this.downloadedSize = remainingSize;
     }
 
     @Override
-    public void setPartialFileStartLenght(long startLenght) {
-        this.fileStartLength = startLenght;
+    public void setFileSize(Size fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    @Override
+    public void setRemainingMillis(long millis) {
+        this.remainingTime = millis;
+    }
+
+    @Override
+    public void setDownloadSpeedSizeMeasurementUnit(String sizeMeasurementUnit) {
+        this.sizeMeasurementUnit = sizeMeasurementUnit;
+    }
+
+    @Override
+    public void setDownloadPercentage(int downloadPercentage) {
+        this.downloadPercentage = downloadPercentage;
+    }
+
+    @Override
+    public void setDownloadSpeed(float downloadSpeed) {
+        this.downloadSpeed = downloadSpeed;
     }
 
     @Override
@@ -61,29 +85,32 @@ abstract class AbstractDownloadOutputWriter implements DownloadOutputWriter {
         this.fileName = filename;
     }
 
-    @Override
-    public void setDownloadStatus(long bytesReceived, long fileSize) {
-        this.bytesReceived = bytesReceived;
-        this.fileSize = fileSize;
+    protected void calculateRemainingTime() {
+        long daysInMillis;
+        long hoursInMillis;
+        remainingDays = TimeUnit.MILLISECONDS.toDays(remainingTime);
+        daysInMillis = TimeUnit.DAYS.toMillis(remainingDays);
+        remainingHours = TimeUnit.MILLISECONDS.toHours(remainingTime
+                - daysInMillis);
+        hoursInMillis = TimeUnit.HOURS.toMillis(remainingHours);
+        remainingMinutes = TimeUnit.MILLISECONDS.toMinutes(remainingTime
+                - daysInMillis - hoursInMillis);
+        remainingSeconds = TimeUnit.MILLISECONDS.toSeconds(remainingTime
+                - daysInMillis - hoursInMillis - TimeUnit.MINUTES.toMillis(remainingMinutes));
+    }
 
-        totBytesTransferred += bytesReceived;
+    protected String getRemainingTime() {
+        if (remainingDays > 0) {
+            return String.format("%2d days %02d hours %02d mins %02d secs", remainingDays,
+                    remainingHours, remainingMinutes, remainingSeconds);
+        } else if (remainingHours > 0) {
+            String.format("%2d hours %02d mins %02d secs", remainingHours, remainingMinutes
+                    , remainingSeconds);
+        }
+        return String.format("%2d mins %02d secs", remainingMinutes, remainingSeconds);
     }
 
     protected boolean pastAtLestOneSecFromLastCall(long now) {
         return ((now - downloadInfoDumpLastCallTime) / downloadInfoDumpRefreshRate) > 1;
-    }
-
-    protected int getDownloadCompletingPercentage(long fileSize) {
-        int percentage = (int)(((float) (totBytesTransferred + fileStartLength)/ (float) fileSize)
-                * 100);
-        return percentage;
-    }
-
-    protected String getCurrentDownloadSpeed() {
-        long milliDiff = System.currentTimeMillis() - downloadStartTime;
-        long secondsDiff = TimeUnit.SECONDS.convert(milliDiff, TimeUnit.MILLISECONDS);
-        float kbPerSecs = ((float) totBytesTransferred / 1024) / (float) secondsDiff;
-        String result = String.format("%.1f KB/s", kbPerSecs);
-        return result;
     }
 }

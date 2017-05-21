@@ -7,9 +7,15 @@ public class ConsoleOutputWriter extends AbstractDownloadOutputWriter {
     public void write() throws IOException {
         long now = System.currentTimeMillis();
         if (pastAtLestOneSecFromLastCall(now)) {
-            int downloadPercentage = getDownloadCompletingPercentage(fileSize);
-            String downloadSpeed = getCurrentDownloadSpeed();
-            System.out.format("%s: %d%% - %s\n", fileName, downloadPercentage, downloadSpeed);
+            calculateRemainingTime();
+            System.out.format("%s: %d%% - %.1f %s/s\n"
+                    , fileName, downloadPercentage, downloadSpeed, sizeMeasurementUnit,
+                    remainingTime);
+            System.out.format("%.1f%s of %.1f%s downloaded\n"
+                    , downloadedSize.size, downloadedSize.unit.toString()
+                    , fileSize.size, fileSize.unit.toString());
+            String remainingTime = getRemainingTime();
+            System.out.format("%s left\n", remainingTime);
             downloadInfoDumpLastCallTime = now;
         }
     }

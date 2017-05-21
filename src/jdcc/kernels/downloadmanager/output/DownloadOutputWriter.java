@@ -1,22 +1,44 @@
 package jdcc.kernels.downloadmanager.output;
 
+import jdcc.kernels.downloadmanager.statistics.Size;
+
 import java.io.IOException;
 
 public interface DownloadOutputWriter {
-
     /***
-     * Imposta il momento in cui è iniziato il downlaod.
+     * Imposta la grandezza scaricate del file.
      *
-     * @param startTime in millisecondi.
+     * @param size grandezza scaricate.
      */
-    void setStartTime(long startTime);
+    void setDownloadedSize(Size size);
 
     /***
-     * Imposta la grandezza iniziale del file che si sta scaricando (in caso fosse stato una
-     * ripresa di download).
-     * @param startLenght
+     * Imposta il tempo di download rimanente.
+     *
+     * @param millis tempo rimanente in millisecondi.
      */
-    void setPartialFileStartLenght(long startLenght);
+    void setRemainingMillis(long millis);
+
+    /***
+     * Imposta la percentuale di completamento del download.
+     *
+     * @param percentage la percentuale.
+     */
+    void setDownloadPercentage(int percentage);
+
+    /***
+     * Imposta la velocità corrente del download.
+     *
+     * @param speed velocità corrente.
+     */
+    void setDownloadSpeed(float speed);
+
+    /***
+     * Imposta l'unità di misura della velocità di download.
+     *
+     * @param sizeMeasurementUnit unità di misura.
+     */
+    void setDownloadSpeedSizeMeasurementUnit(String sizeMeasurementUnit);
 
     /***
      * Imposta il nome della rete irc.
@@ -54,12 +76,11 @@ public interface DownloadOutputWriter {
     void setFileName(String filename);
 
     /***
-     * Imposta lo stato corrente del download.
+     * Imposta la grandezza del file.
      *
-     * @param bytesReceived il numero di bytes ricevuti in questo momento.
-     * @param fileSize grandezza complessiva del file.
+     * @param fileSize grandezza del file.
      */
-    void setDownloadStatus(long bytesReceived, long fileSize);
+    void setFileSize(Size fileSize);
 
     /***
      * Scrive lo stato corrente del download sull'output implementato.

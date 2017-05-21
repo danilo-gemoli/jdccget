@@ -4,8 +4,15 @@ import jdcc.kernels.Kernel;
 import jdcc.kernels.bot.FileTransferConnection;
 import jdcc.controllers.download.DownloadController;
 import jdcc.kernels.downloadmanager.output.DownloadOutputWriter;
+import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
 
 public interface DownloadKernel extends Kernel {
+    /***
+     * Imposta l'oggetto che si occupa delle statistiche del download.
+     *
+     * @param statistics
+     */
+    void setDownloadStatistics(DownloadStatistics statistics);
 
     /***
      * Imposta il controller di questo kernel.

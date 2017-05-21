@@ -20,6 +20,8 @@ import jdcc.kernels.downloadmanager.output.DownloadOutputWriter;
 import jdcc.exceptions.NoSupportedLanguageException;
 import jdcc.ircparser.IrcMessageParser;
 import jdcc.ircparser.keywordsparser.KeywordsIrcMessageParser;
+import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
+import jdcc.kernels.downloadmanager.statistics.SimpleDownloadStatistics;
 import jdcc.settings.Settings;
 
 public class ConfigBuilder implements ApplicationBuilder {
@@ -35,6 +37,7 @@ public class ConfigBuilder implements ApplicationBuilder {
     private DownloadController downloadController;
     private IrcMessageParser messageParser;
     private DownloadOutputWriter downloadOutputWriter;
+    private DownloadStatistics downloadStatistics;
 
     public ConfigBuilder() { }
 
@@ -58,6 +61,7 @@ public class ConfigBuilder implements ApplicationBuilder {
 
         messageParser = new KeywordsIrcMessageParser();
         downloadOutputWriter = new ConsoleOutputWriter();
+        downloadStatistics = new SimpleDownloadStatistics();
 
         try {
             messageParser.setLanguage(IrcMessageParser.Languages.ALL_LANGUAGES);
@@ -82,6 +86,7 @@ public class ConfigBuilder implements ApplicationBuilder {
         kernelManager.setController(managerController);
         managerController.setKernel(kernelManager);
 
+        downloadKernel.setDownloadStatistics(downloadStatistics);
         downloadKernel.setController(downloadController);
         downloadKernel.setOutputWriter(downloadOutputWriter);
         downloadKernel.setDownloadPath(settings.DOWNLOAD_PATH);

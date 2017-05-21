@@ -39,7 +39,7 @@
         <appender-ref ref="DOWNLOAD-FILE" />
     </logger>
 
-    <root level="OFF">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

@@ -16,10 +16,15 @@ nickname=jdcc-test
 #bot-name=CM|SiNgOLi|MP3|03
 #pack-number=101
 
-server-hostname=irc.openjoke.biz
-channel=#V3L0X
-bot-name=V3L0X|CiNeMa|01
-pack-number=65
+#server-hostname=irc.openjoke.biz
+#channel=#V3L0X
+#bot-name=V3L0X|CiNeMa|01
+#pack-number=65
+
+server-hostname=irc.futureshell.net
+channel=#the_pub
+bot-name=THE|PUB|1|CuLT|1
+pack-number=12
 
 hi-channel-msg=hi
 

@@ -7,12 +7,15 @@ import jdcc.controllers.download.DownloadController;
 import jdcc.kernels.downloadmanager.output.DownloadOutputWriter;
 import jdcc.events.messages.DownloadCompleted;
 import jdcc.events.messages.DownloadError;
+import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
+import jdcc.kernels.downloadmanager.statistics.Size;
 import jdcc.logger.JdccLogger;
 
 import java.io.IOException;
 
 public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferCallback {
     private DownloadController controller;
+    private DownloadStatistics statistics;
     private String downloadPath;
     private FileTransferConnection transferConnection;
     private boolean resumeDownload;
@@ -23,9 +26,9 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
     @Override
     public void run() {
         try {
-            setOutputWriterStartTime(System.currentTimeMillis());
+            setStatisticsStartTime(System.currentTimeMillis());
             transferConnection.acceptDownload(resumeDownload);
-            setOutputWriterFileStartLength();
+            setStatisticsFileStartLength();
             transferConnection.startDownload();
         } catch (Exception e) {
             JdccLogger.logger.error("ThreadedDownload: acceptDownload error", e);
@@ -34,6 +37,11 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
         }
         DownloadCompleted downloadCompleted = new DownloadCompleted();
         controller.sendMessage(downloadCompleted);
+    }
+
+    @Override
+    public void setDownloadStatistics(DownloadStatistics statistics) {
+        this.statistics = statistics;
     }
 
     @Override
@@ -71,8 +79,29 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
 
     @Override
     public void onBytesReceived(int bytesReceived, long fileSize) {
-        if (outputWriter != null) {
-            outputWriter.setDownloadStatus(bytesReceived, fileSize);
+        dumpDownloadStatus(bytesReceived, fileSize);
+    }
+
+    @Override
+    public void dispose() {
+
+    }
+
+    private void dumpDownloadStatus(int bytesReceived, long fileSize) {
+        if (outputWriter != null && statistics != null) {
+            statistics.setTotalBytesToDownload(fileSize);
+            statistics.setCurrentDownloadedBytes(bytesReceived);
+            Size downloadSpeed = statistics.getCurrentDownloadSpeed();
+            int downloadPercentage = statistics.getDownloadCompletingPercentage();
+            long remainingTime = statistics.getRemainingTimeInSeconds();
+            Size downloadedSize = statistics.getDownloadedSize();
+            Size totFileSize = statistics.getTotalSizeToDownload();
+            outputWriter.setDownloadPercentage(downloadPercentage);
+            outputWriter.setDownloadSpeed(downloadSpeed.size);
+            outputWriter.setDownloadSpeedSizeMeasurementUnit(downloadSpeed.unit.toString());
+            outputWriter.setRemainingMillis(remainingTime * 1000);
+            outputWriter.setDownloadedSize(downloadedSize);
+            outputWriter.setFileSize(totFileSize);
             try {
                 outputWriter.write();
             } catch (IOException e) {
@@ -81,25 +110,21 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
         }
     }
 
-    @Override
-    public void dispose() {
-
-    }
-
     protected void setDownloadFullpath(String fullpath) {
         transferConnection.setDestinationFilepath(fullpath);
     }
 
-    private void setOutputWriterStartTime(long time) {
-        if (outputWriter != null) {
-            outputWriter.setStartTime(time);
+    private void setStatisticsStartTime(long time) {
+        if (statistics != null) {
+            statistics.setDownloadStartTime(time);
         }
     }
 
-    private void setOutputWriterFileStartLength() {
-        if (outputWriter != null) {
+    private void setStatisticsFileStartLength() {
+        if (statistics != null) {
             if (transferConnection.hasBeenResumed()) {
-                outputWriter.setPartialFileStartLenght(transferConnection.getPartialFileStartLength());
+                statistics.setDownloadStartPosition(transferConnection
+                        .getPartialFileStartLength());
             }
         }
     }

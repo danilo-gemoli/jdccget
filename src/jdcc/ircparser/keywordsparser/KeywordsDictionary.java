@@ -8,4 +8,6 @@ public interface KeywordsDictionary {
     String[] getDonwloadAvailableKeywords();
 
     String[] getRemovedFromQueueKeywords();
+
+    // TODO: aggiungere keywords per "ripresa supportata" del download.
 }
