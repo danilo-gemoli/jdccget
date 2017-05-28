@@ -1,6 +1,6 @@
 package jdcc.settings;
 
-import jdcc.exceptions.NoFileSettingsFound;
+import jdcc.exceptions.NoFileSettingsFoundException;
 import jdcc.exceptions.SettingsParsingException;
 import jdcc.logger.JdccLogger;
 
@@ -16,10 +16,10 @@ public final class SettingsLoader {
      * Carica le impostazioni dal file di dafault.
      *
      * @return le impostazioni caricate.
-     * @throws NoFileSettingsFound
+     * @throws NoFileSettingsFoundException
      * @throws SettingsParsingException
      */
-    public static Settings load() throws NoFileSettingsFound, SettingsParsingException {
+    public static Settings load() throws NoFileSettingsFoundException, SettingsParsingException {
         return loadFromFile(DEFAULT_CONFIG_FILE);
     }
 
@@ -28,13 +28,13 @@ public final class SettingsLoader {
      *
      * @param filename filename comprensivo di path.
      * @return le impostazioni caricate.
-     * @throws NoFileSettingsFound
+     * @throws NoFileSettingsFoundException
      * @throws SettingsParsingException
      */
     public static Settings loadFromFile(String filename)
-            throws NoFileSettingsFound, SettingsParsingException {
+            throws NoFileSettingsFoundException, SettingsParsingException {
         if (!new File(filename).exists()) {
-            throw new NoFileSettingsFound();
+            throw new NoFileSettingsFoundException();
         }
 
         try {

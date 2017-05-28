@@ -1,15 +1,11 @@
 package jdcc.dispatcher;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import jdcc.events.commands.Command;
-import jdcc.events.messages.Message;
+import jdcc.events.Event;
 import jdcc.logger.JdccLogger;
 
 
@@ -17,13 +13,8 @@ public class SingleThreadDispatcher implements Dispatcher, Runnable {
     private static long DEF_TIME_TO_SLEEP = 100;
     private long timeToSleep;
 
-    private Lock stopLock;
-    private Lock messagesLock;
-    private Lock commandsLock;
-    private Queue<Message> messages;
-    private Queue<Command> commands;
-    private List<DispatcherObserver> messageObservers;
-    private List<DispatcherObserver> commandObservers;
+    private Queue<Event> events;
+    private CopyOnWriteArrayList<DispatcherObserver> observers;
     private boolean isRunning;
 
     public SingleThreadDispatcher() {
@@ -32,23 +23,8 @@ public class SingleThreadDispatcher implements Dispatcher, Runnable {
 
     public SingleThreadDispatcher(long timeToSleep) {
         this.timeToSleep = timeToSleep;
-        messagesLock = new ReentrantLock();
-        commandsLock = new ReentrantLock();
-        stopLock = new ReentrantLock();
-        messages = new ConcurrentLinkedQueue<>();
-        commands = new ConcurrentLinkedQueue<>();
-        messageObservers = new LinkedList<>();
-        commandObservers = new LinkedList<>();
-    }
-
-    @Override
-    public void addCommand(Command command) {
-        try {
-            commandsLock.lock();
-            doAddCommand(command);
-        } finally {
-            commandsLock.unlock();
-        }
+        events = new ConcurrentLinkedQueue<>();
+        observers = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -58,154 +34,59 @@ public class SingleThreadDispatcher implements Dispatcher, Runnable {
     }
 
     @Override
-    public void stop() {
-        // TODO
+    public synchronized void stop() {
+        isRunning = false;
     }
 
     @Override
-    public void addMessage(Message message) {
-        try {
-            messagesLock.lock();
-            doAddMessage(message);
-        } finally {
-            messagesLock.unlock();
-        }
+    public void addEvent(Event e) {
+        events.add(e);
     }
 
     @Override
-    public void registerCommandsObserver(DispatcherObserver observer) {
-        try {
-            commandsLock.lock();
-            doRegisterObserver(commandObservers, observer);
-        } finally {
-            commandsLock.unlock();
-        }
+    public void registerObserver(DispatcherObserver observer) {
+        observers.add(observer);
     }
 
     @Override
-    public void unregisterCommandsObserver(DispatcherObserver observer) {
-        try {
-            commandsLock.lock();
-            doUnregisterObserver(commandObservers, observer);
-        } finally {
-            commandsLock.unlock();
-        }
-    }
-
-    @Override
-    public void registerMessagesObserver(DispatcherObserver observer) {
-        try {
-            messagesLock.lock();
-            doRegisterObserver(messageObservers, observer);
-        } finally {
-            messagesLock.unlock();
-        }
-    }
-
-    @Override
-    public void unregisterMessagesObserver(DispatcherObserver observer) {
-        try {
-            messagesLock.lock();
-            doUnregisterObserver(messageObservers, observer);
-        } finally {
-            messagesLock.unlock();
-        }
+    public void unregisterObserver(DispatcherObserver observer) {
+        observers.remove(observer);
     }
 
     @Override
     public void run() {
-        JdccLogger.logger.info("dispatcher start");
+        JdccLogger.logger.trace("SingleThreadDispatcher: start");
         startDispatcher();
-        JdccLogger.logger.info("is running {}", isRunning());
+        JdccLogger.logger.trace("SingleThreadDispatcher: is running {}", isRunning());
         while (isRunning()) {
             dispatch();
             try {
                 Thread.sleep(timeToSleep);
             } catch (InterruptedException e) {
-                JdccLogger.logger.error("Dispatcher sleep error", e);
+                JdccLogger.logger.error("SingleThreadDispatcher: InterruptedException", e);
             }
         }
     }
 
-    public void stopDispatcher() {
-        try {
-            stopLock.lock();
-            isRunning = false;
-        } finally {
-            stopLock.unlock();
-        }
+    public synchronized boolean isRunning() {
+        return isRunning;
     }
 
-    public boolean isRunning() {
-        try {
-            stopLock.lock();
-            return isRunning;
-        } finally {
-            stopLock.unlock();
-        }
-    }
-
-    public void startDispatcher() {
-        try {
-            stopLock.lock();
-            isRunning = true;
-        } finally {
-            stopLock.unlock();
-        }
+    public synchronized void startDispatcher() {
+        isRunning = true;
     }
 
     private void dispatch() {
-        notifyNewCommands();
-        notifyNewMessages();
+        notifyEvents();
     }
 
-    private void notifyNewCommands() {
-        try {
-            commandsLock.lock();
-            commands.forEach(c -> commandObservers.forEach(o -> o.notify(c)));
-            commands.clear();
-        } finally {
-            commandsLock.unlock();
-        }
-    }
-
-    private void notifyNewMessages() {
-        try {
-            messagesLock.lock();
-            messages.forEach(m -> messageObservers.forEach(o -> o.notify(m)));
-            messages.clear();
-        } finally {
-            messagesLock.unlock();
-        }
-    }
-
-    private void doUnregisterObserver(List<DispatcherObserver> observers, DispatcherObserver
-            toUnregister) {
-        Iterator<DispatcherObserver> it = observers.iterator();
-        while (it.hasNext()) {
-            DispatcherObserver currentObserver = it.next();
-            if (currentObserver == toUnregister) {
-                it.remove();
-                break;
+    private void notifyEvents() {
+        Event e;
+        while ((e = events.poll()) != null) {
+            Iterator<DispatcherObserver> it = observers.iterator();
+            while (it.hasNext()) {
+                it.next().notify(e);
             }
         }
-    }
-
-    private boolean doRegisterObserver(List<DispatcherObserver> observers, DispatcherObserver
-            toRegister) {
-        if (!observers.contains(toRegister)) {
-            observers.add(toRegister);
-            JdccLogger.logger.debug("observer {} registered", toRegister);
-            return true;
-        }
-        return false;
-    }
-
-    private void doAddMessage(Message message) {
-        messages.add(message);
-    }
-
-    private void doAddCommand(Command command) {
-        commands.add(command);
     }
 }

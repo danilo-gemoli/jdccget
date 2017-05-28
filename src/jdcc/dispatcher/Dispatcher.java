@@ -1,10 +1,8 @@
 package jdcc.dispatcher;
 
-import jdcc.events.commands.Command;
-import jdcc.events.messages.Message;
+import jdcc.events.Event;
 
 public interface Dispatcher {
-
     /***
      * Avvia il dispatcher.
      */
@@ -16,47 +14,22 @@ public interface Dispatcher {
     void stop();
 
     /***
-     * Aggiunge un evento messaggio al dispatcher.
-     *
-     * @param message
+     * Aggiunge un evento al dispatcher.
+     * @param e
      */
-    void addMessage(Message message);
+    void addEvent(Event e);
 
     /***
-     * Aggiunge un evento comando al dispatcher.
+     * Registra un observer che viene notificato ogni volta che viene inviato un evento.
      *
-     * @param command
+     * @param observer l'observer da registrare.
      */
-    void addCommand(Command command);
+    void registerObserver(DispatcherObserver observer);
 
     /***
-     * Registra un observer che viene notificato ogni volta che viene
-     * inviato un comando.
+     * Annulla la registrazione di un observer.
      *
-     * @param observer
+     * @param observer l'observer da de-registrare.
      */
-    void registerCommandsObserver(DispatcherObserver observer);
-
-    /***
-     * Annulla la registrazione di un observer di comandi.
-     *
-     * @param observer
-     */
-    void unregisterCommandsObserver(DispatcherObserver observer);
-
-    /***
-     * Registra un observer che viene notificato ogni volta che viene
-     * inviato un messaggio.
-     *
-     * @param observer
-     */
-    void registerMessagesObserver(DispatcherObserver observer);
-
-    /***
-     * Annulla la registrazione di un observer di messaggi.
-     *
-     * @param observer
-     */
-    void unregisterMessagesObserver(DispatcherObserver observer);
-
+    void unregisterObserver(DispatcherObserver observer);
 }

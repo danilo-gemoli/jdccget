@@ -5,7 +5,6 @@ import jdcc.exceptions.NoChannelJoinedException;
 import jdcc.exceptions.NoServerConnectionException;
 import jdcc.kernels.Kernel;
 
-// TODO: rendere più generica l'interfaccia (connessione a più network)
 public interface BotKernelManager extends Kernel {
     /***
      * Imposta il controller del kernel.

@@ -5,6 +5,8 @@ public abstract class AbstractKeywordsDictionary implements KeywordsDictionary {
     protected String[] queueFullKeywords;
     protected String[] removedQueueKeywords;
     protected String[] downloadAvailableKeywords;
+    protected String[] bandwidthLimitKeywords;
+    protected String[] downloadResumeSupportedKeywords;
 
     @Override
     public String[] getDonwloadAvailableKeywords() {
@@ -24,5 +26,13 @@ public abstract class AbstractKeywordsDictionary implements KeywordsDictionary {
     @Override
     public String[] getRemovedFromQueueKeywords() {
         return removedQueueKeywords;
+    }
+
+    @Override
+    public String[] getBandwidthLimitKeywords() { return bandwidthLimitKeywords; }
+
+    @Override
+    public String[] getDownloadResumeSupportedKeywords() {
+        return downloadResumeSupportedKeywords;
     }
 }

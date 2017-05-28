@@ -1,6 +1,10 @@
-package jdcc.builder;
+package jdcc.kernels.app.builder;
 
+import jdcc.controllers.app.AppController;
+import jdcc.controllers.app.MainAppController;
 import jdcc.exceptions.BuildErrorException;
+import jdcc.kernels.app.Application;
+import jdcc.kernels.app.JdccApp;
 import jdcc.kernels.bot.BotKernel;
 import jdcc.kernels.bot.PircBot;
 import jdcc.kernels.botmanager.DccDownloaderKernel;
@@ -25,9 +29,7 @@ import jdcc.kernels.downloadmanager.statistics.SimpleDownloadStatistics;
 import jdcc.settings.Settings;
 
 public class ConfigBuilder implements ApplicationBuilder {
-
     private Settings settings;
-
     private Dispatcher dispatcher;
     private BotKernel botKernel;
     private BotController botController;
@@ -38,6 +40,7 @@ public class ConfigBuilder implements ApplicationBuilder {
     private IrcMessageParser messageParser;
     private DownloadOutputWriter downloadOutputWriter;
     private DownloadStatistics downloadStatistics;
+    private AppController appController;
 
     public ConfigBuilder() { }
 
@@ -47,7 +50,10 @@ public class ConfigBuilder implements ApplicationBuilder {
     }
 
     @Override
-    public void build() throws BuildErrorException {
+    public Application build() throws BuildErrorException {
+        Application app = new JdccApp();
+        appController = new MainAppController();
+
         dispatcher = new SingleThreadDispatcher();
 
         botKernel = new PircBot();
@@ -66,18 +72,20 @@ public class ConfigBuilder implements ApplicationBuilder {
         try {
             messageParser.setLanguage(IrcMessageParser.Languages.ALL_LANGUAGES);
         } catch (NoSupportedLanguageException e) {
-            throw new BuildErrorException(String.format("Impossibile impostare il linguaggio %s " +
-                    "nel parser irc", e.language));
+            throw new BuildErrorException(String.format(
+                    "Impossibile impostare il linguaggio %s nel parser irc", e.language));
         }
         messageParser.setCaseSensitive(false);
 
-        dispatcher.registerCommandsObserver(botController);
-        dispatcher.registerMessagesObserver(managerController);
-        dispatcher.registerMessagesObserver(downloadController);
+        dispatcher.registerObserver(botController);
+        dispatcher.registerObserver(managerController);
+        dispatcher.registerObserver(downloadController);
+        dispatcher.registerObserver(appController);
 
         botController.setDispatcher(dispatcher);
         managerController.setDispatcher(dispatcher);
         downloadController.setDispatcher(dispatcher);
+        appController.setKernel(app);
 
         botKernel.setController(botController);
         botKernel.setMessagePaser(messageParser);
@@ -92,10 +100,31 @@ public class ConfigBuilder implements ApplicationBuilder {
         downloadKernel.setDownloadPath(settings.DOWNLOAD_PATH);
         downloadKernel.setResumeDownload(settings.RESUME_DOWNLOAD);
         downloadController.setKernel(downloadKernel);
-    }
 
-    @Override
-    public Dispatcher getDispatcher() {
-        return dispatcher;
+        app.setController(appController);
+        app.setBotKernel(botKernel);
+        app.setDownloadKernel(downloadKernel);
+        app.setKernelManager(kernelManager);
+
+        app.setBotController(botController);
+        app.setDownloadController(downloadController);
+        app.setManagerController(managerController);
+
+        app.setDownloadOutputWriter(downloadOutputWriter);
+        app.setDownloadStatistics(downloadStatistics);
+
+        app.setMessageParser(messageParser);
+
+        app.setDispatcher(dispatcher);
+
+        app.setServerHostname(settings.SERVER_HOSTNAME);
+        app.setServerPort(settings.SERVER_PORT);
+        app.setChannel(settings.CHANNEL);
+        app.setHiChannelMessage(settings.HI_CHANNEL_MSG);
+        app.setBotName(settings.BOT_NAME);
+        app.setPackNumber(settings.PACK_NUMBER);
+        app.setNickname(settings.NICKNAME);
+
+        return app;
     }
 }

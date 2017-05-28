@@ -104,7 +104,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     @Override
     public void onConnect(ConnectEvent event) throws Exception {
         ServerConnected connectedMessage = new ServerConnected();
-        controller.sendMessage(connectedMessage);
+        controller.sendEvent(connectedMessage);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
         ChannelJoined channelJoined = new ChannelJoined();
         channelJoined.channelName = event.getChannel().getName();
         channelJoined.userNickname = event.getUser().getNick();
-        controller.sendMessage(channelJoined);
+        controller.sendEvent(channelJoined);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
         FileTransferConnection transferConnection = new PircFileTransfer(event);
         DownloadConnection downloadConnection = new DownloadConnection();
         downloadConnection.fileTransferConnection = transferConnection;
-        controller.sendMessage(downloadConnection);
+        controller.sendEvent(downloadConnection);
     }
 
     @Override
@@ -131,14 +131,14 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     @Override
     public void onDisconnect(DisconnectEvent event) throws Exception {
         ServerDisconnected serverDisconnected = new ServerDisconnected();
-        controller.sendMessage(serverDisconnected);
+        controller.sendEvent(serverDisconnected);
     }
 
     @Override
     public void onKick(KickEvent event) throws Exception {
         Kick kickMsg = new Kick();
         kickMsg.reason = event.getReason();
-        controller.sendMessage(kickMsg);
+        controller.sendEvent(kickMsg);
     }
     // IRC EVENT HANDLERS
 
@@ -148,7 +148,6 @@ public class PircBot extends ListenerAdapter implements BotKernel {
                 .setName(nickname)
                 .setServerPassword(serverPassword)
                 .addServer(serverName);
-
         pircBotConfigurationBuilder.setBotFactory(new MyBotFactory());
         pircBotConfiguration = pircBotConfigurationBuilder.buildConfiguration();
     }
@@ -181,7 +180,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
 
     private void sendFatalError(Exception ex) {
         FatalError fatalError = new FatalError(ex);
-        controller.sendMessage(fatalError);
+        controller.sendEvent(fatalError);
     }
 
     private void handleMessage(GenericMessageEvent event) {
@@ -199,29 +198,31 @@ public class PircBot extends ListenerAdapter implements BotKernel {
         XdccMessageType msgType = messageParser.parseXdccMessage(message);
         String botName = event.getUser().getNick();
 
-        if (msgType == XdccMessageType.DOWNLOADING) {
+        if (msgType == XdccMessageType.DOWNLOADING
+                || msgType == XdccMessageType.BANDWIDTH_LIMIT
+                || msgType == XdccMessageType.DOWNLOAD_RESUME_SUPPORTED) {
             // Tutto bene, non fare niente qui.
         } else if (msgType == XdccMessageType.IN_QUEUE) {
             int packNumber = messageParser.getPackNumberFromMessage(message);
             XdccDownloadInQueue inQueueMsg = new XdccDownloadInQueue();
             inQueueMsg.botName = botName;
             inQueueMsg.packNumber = packNumber;
-            controller.sendMessage(inQueueMsg);
+            controller.sendEvent(inQueueMsg);
         } else if (msgType == XdccMessageType.QUEUE_IS_FULL) {
             int packNumber = messageParser.getPackNumberFromMessage(message);
             XdccDownloadQueueFull queueFullMsg = new XdccDownloadQueueFull();
             queueFullMsg.botName = botName;
             queueFullMsg.packNumber = packNumber;
-            controller.sendMessage(queueFullMsg);
+            controller.sendEvent(queueFullMsg);
         } else if (msgType == XdccMessageType.REMOVED_FROM_QUEUE) {
             XdccRemovedFromQueue removedFromQueueMsg = new XdccRemovedFromQueue();
             removedFromQueueMsg.botName = botName;
-            controller.sendMessage(removedFromQueueMsg);
+            controller.sendEvent(removedFromQueueMsg);
         } else if (msgType == XdccMessageType.UNKNOWN) {
             XdccUnknown unknownMsg = new XdccUnknown();
             unknownMsg.botName = botName;
             unknownMsg.rawMessage = message;
-            controller.sendMessage(unknownMsg);
+            controller.sendEvent(unknownMsg);
         }
     }
 }

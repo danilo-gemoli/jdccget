@@ -1,14 +1,13 @@
-package jdcc.builder;
+package jdcc.kernels.app.builder;
 
-import jdcc.dispatcher.Dispatcher;
 import jdcc.exceptions.BuildErrorException;
+import jdcc.kernels.app.Application;
 import jdcc.settings.Settings;
 
 /***
- * ApplicationBuilder che si occupa di fare il bootstrap dell'applicazione.
+ * ApplicationBuilder che si occupa di costruire i componenti dell'applicazione.
  */
 public interface ApplicationBuilder {
-
     /***
      * Imposta la configurazione per il builder.
      *
@@ -19,15 +18,8 @@ public interface ApplicationBuilder {
     /***
      * Costruisce gli oggetti fondamentali dell'applicazione.
      *
+     * @return Application l'applicazione appena costruita.
      * @throws BuildErrorException in caso di errore durante la costruzione
      */
-    void build() throws BuildErrorException;
-
-    /***
-     * Ritorna il dispatcher dell'applicazione.
-     *
-     * @return il dispatcher.
-     */
-    Dispatcher getDispatcher();
-
+    Application build() throws BuildErrorException;
 }

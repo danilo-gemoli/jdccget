@@ -3,7 +3,6 @@ package jdcc.events;
 import jdcc.events.handler.EventHandler;
 
 public interface Event {
-
     /***
      * Metodo di convenienza per il multiple dispatch dell'evento.
      *
@@ -17,5 +16,4 @@ public interface Event {
      * @return id univoco per ogni evento.
      */
     String getId();
-
 }

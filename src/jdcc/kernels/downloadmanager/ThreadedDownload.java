@@ -32,11 +32,11 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
             transferConnection.startDownload();
         } catch (Exception e) {
             JdccLogger.logger.error("ThreadedDownload: acceptDownload error", e);
-            controller.sendMessage(new DownloadError(e));
+            controller.sendEvent(new DownloadError(e));
             return;
         }
         DownloadCompleted downloadCompleted = new DownloadCompleted();
-        controller.sendMessage(downloadCompleted);
+        controller.sendEvent(downloadCompleted);
     }
 
     @Override
@@ -83,9 +83,7 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
     }
 
     @Override
-    public void dispose() {
-
-    }
+    public void dispose() { }
 
     private void dumpDownloadStatus(int bytesReceived, long fileSize) {
         if (outputWriter != null && statistics != null) {
@@ -131,6 +129,6 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
 
     private void sendDownloadIsStartingMessage() {
         DownloadIsStarting startingMsg = new DownloadIsStarting();
-        controller.sendMessage(startingMsg);
+        controller.sendEvent(startingMsg);
     }
 }

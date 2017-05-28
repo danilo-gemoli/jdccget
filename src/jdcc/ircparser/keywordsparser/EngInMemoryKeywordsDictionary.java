@@ -14,5 +14,11 @@ public class EngInMemoryKeywordsDictionary extends AbstractKeywordsDictionary {
         removedQueueKeywords = new String[] {
             "removed", "queue"
         };
+        bandwidthLimitKeywords = new String[] {
+            "bandwidth", "limit"
+        };
+        downloadResumeSupportedKeywords = new String[] {
+            "resume", "supported"
+        };
     }
 }

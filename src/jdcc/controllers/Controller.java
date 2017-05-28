@@ -2,12 +2,10 @@ package jdcc.controllers;
 
 import jdcc.dispatcher.Dispatcher;
 import jdcc.dispatcher.DispatcherObserver;
-import jdcc.events.commands.Command;
-import jdcc.events.messages.Message;
+import jdcc.events.Event;
 import jdcc.kernels.Kernel;
 
 public interface Controller extends DispatcherObserver {
-
     /***
      * Imposta il dispatcher di questo controller.
      *
@@ -23,17 +21,9 @@ public interface Controller extends DispatcherObserver {
     void setKernel(Kernel kernel);
 
     /***
-     * Invia un comando.
+     * Invia un evento.
      *
-     * @param command
+     * @param event l'evento da inviare
      */
-    void sendCommand(Command command);
-
-    /***
-     * Invia un messaggio.
-     *
-     * @param message
-     */
-    void sendMessage(Message message);
-
+    void sendEvent(Event event);
 }

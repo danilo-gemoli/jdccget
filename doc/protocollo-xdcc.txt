@@ -1,15 +1,16 @@
 *** INTRODUZIONE ***
-Il protocollo XDCC è un'estensione del protocollo DCC che permette il client di interagire con appositi bot in modo
-tale da richiedere o inviare file anche in grande numero e in modo agevole.
+Il protocollo XDCC è un'estensione del protocollo DCC che permette il client di interagire con
+appositi bot in modo tale da richiedere o inviare file anche in grande numero e in modo agevole.
 
 
 *** FLUSSO DEL PROTOCOLLO ***
-Nel protocollo c'è un client attivo ed uno passivo. L'attivo è colui che richiede il file, il passivo è colui che
-riceve la richiesta, prepara una socket in ascolto ed invia all'attivo gli estremi per contattarlo direttamente.
+Nel protocollo c'è un client attivo ed uno passivo. L'attivo è colui che richiede il file, il
+passivo è colui che riceve la richiesta, prepara una socket in ascolto ed invia all'attivo gli
+estremi per contattarlo direttamente.
 A questo punto l'attivo si connette al passivo e la connessione diretta è realizzata.
 
 * CASO IN CUI SI RICHIEDE UN NUOVO DOWNLOAD
-client  ---     PRIVMSG xdcc send #pack-num                ---> bot
+client  ---     PRIVMSG xdcc send [#PACK-NUM]              ---> bot
 client <---     CTCP dcc send [IP] [PORT] [FILESIZE]       ---  bot
 
 Da qui in poi la comunicazione avviene su una socket separata.
@@ -17,7 +18,7 @@ Da qui in poi la comunicazione avviene su una socket separata.
 client <---     SOCKET TCP                                 ---  bot
 
 * CASO IN CUI SI RICHIEDE DI RIPRENDERE UN DOWNLOAD A PARTIRE DA UN FILE PARZIALE
-client  ---     PRIVMSG xdcc send #[PACK-NUM]              ---> bot
+client  ---     PRIVMSG xdcc send [#PACK-NUM]              ---> bot
 client <---     CTCP dcc send [IP] [PORT] [FILESIZE]       ---  bot
 client  ---     CTCP dcc resume [START-POSITION] ...       ---> bot
 client <---     CTCP dcc accept ...                        ---  bot

@@ -54,4 +54,6 @@ public interface EventHandler {
     void handle(FatalError event);
 
     void handle(Kick event);
+
+    void handle(ShutDown event);
 }

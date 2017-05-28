@@ -97,7 +97,6 @@ class SimpleSettingsParser implements SettingsParser {
 
     private void parseDownloadPath(String value) {
         Path path;
-
         try {
             path = Paths.get(value);
         } catch (InvalidPathException e) {

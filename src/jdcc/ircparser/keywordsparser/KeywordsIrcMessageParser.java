@@ -84,6 +84,12 @@ public class KeywordsIrcMessageParser implements IrcMessageParser {
         } else if (StringUtility.stringContainsWords(msg
                 , dict.getRemovedFromQueueKeywords(), caseSensitive)) {
             return XdccMessageType.REMOVED_FROM_QUEUE;
+        } else if (StringUtility.stringContainsWords(msg
+                , dict.getBandwidthLimitKeywords(), caseSensitive)) {
+            return XdccMessageType.BANDWIDTH_LIMIT;
+        } else if (StringUtility.stringContainsWords(msg
+                , dict.getDownloadResumeSupportedKeywords(), caseSensitive)) {
+            return XdccMessageType.DOWNLOAD_RESUME_SUPPORTED;
         }
         return XdccMessageType.UNKNOWN;
     }

@@ -1,6 +1,6 @@
 ###############################################
 ###############################################
-###### FILE DI CONFIGURAZIONE DI jdcc-get #####
+###### FILE DI CONFIGURAZIONE DI jdccget ######
 ###############################################
 ###############################################
 # LE LINEE CHE INIZIANO CON "#" SONO TRATTATE COME COMMENTI E QUINDI IGNORATE.
@@ -24,7 +24,7 @@ nickname=jdcc-test
 server-hostname=irc.futureshell.net
 channel=#the_pub
 bot-name=THE|PUB|1|CuLT|1
-pack-number=12
+pack-number=14
 
 hi-channel-msg=hi
 

@@ -21,8 +21,6 @@ public class PircBotController extends AbstractController implements BotControll
 
     @Override
     public void notify(Event event) {
-        JdccLogger.logger.info("event id: {} event type: {}", event.getId()
-                , event.getClass().getCanonicalName());
         event.handle(this);
     }
 

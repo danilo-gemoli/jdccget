@@ -14,5 +14,11 @@ public class ItaInMemoryKeywordsDictionary extends AbstractKeywordsDictionary {
         removedQueueKeywords = new String[] {
             "rimosso", "coda"
         };
+        bandwidthLimitKeywords = new String[] {
+            "limite", "banda", "pack"
+        };
+        downloadResumeSupportedKeywords = new String[] {
+            "ripresa", "supportata"
+        };
     }
 }

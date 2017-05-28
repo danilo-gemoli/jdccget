@@ -7,7 +7,7 @@ public final class StringUtility {
      * @param str la stringa su cui fare il match.
      * @param words array di parole da controllare nella stringa.
      * @param caseSensitive abilita/disabilita il controllo sulle maiuscole.
-     * @return true se la stringa contiene tutte le parole, altriemnti false.
+     * @return true se la stringa contiene tutte le parole, false altrimenti.
      */
     public static boolean stringContainsWords(String str, String[] words, boolean caseSensitive) {
         String myStr = str;

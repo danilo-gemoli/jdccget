@@ -6,7 +6,6 @@ import jdcc.kernels.Kernel;
 
 
 public interface BotKernel extends Kernel {
-
     /***
      * Imposta il controller del kernel.
      *

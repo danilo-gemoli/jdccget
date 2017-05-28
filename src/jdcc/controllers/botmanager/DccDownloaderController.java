@@ -25,7 +25,6 @@ public class DccDownloaderController extends AbstractController implements Manag
 
     @Override
     public void notify(Event event) {
-        JdccLogger.logger.info("event: {}", event.getId());
         event.handle(this);
     }
 
@@ -44,9 +43,9 @@ public class DccDownloaderController extends AbstractController implements Manag
         try {
             kernel.onXdccSendRequest(event.botName, event.packNumber);
         } catch (NoServerConnectionException e) {
-            JdccLogger.logger.error("handleXdccSend error", e);
+            JdccLogger.logger.error("DccDownloaderController: NoServerConnectionException", e);
         } catch (NoChannelJoinedException e) {
-            JdccLogger.logger.error("handleXdccSend error", e);
+            JdccLogger.logger.error("DccDownloaderController: NoChannelJoinedException", e);
         }
     }
 
@@ -60,9 +59,9 @@ public class DccDownloaderController extends AbstractController implements Manag
         try {
             kernel.onSendMessageRequest(directMessage.target, directMessage.message);
         } catch (NoServerConnectionException e) {
-            JdccLogger.logger.error("handleDirectMessage error", e);
+            JdccLogger.logger.error("DccDownloaderController: NoServerConnectionException", e);
         } catch (NoChannelJoinedException e) {
-            JdccLogger.logger.error("handleDirectMessage error", e);
+            JdccLogger.logger.error("DccDownloaderController: NoChannelJoinedException", e);
         }
     }
 
@@ -71,7 +70,7 @@ public class DccDownloaderController extends AbstractController implements Manag
         try {
             kernel.onJoinChannelRequest(join.channelName, join.channelPassword);
         } catch (NoServerConnectionException e) {
-            JdccLogger.logger.error("join channel request error", e);
+            JdccLogger.logger.error("DccDownloaderController: NoServerConnectionException", e);
         }
     }
 

@@ -13,7 +13,6 @@ import jdcc.logger.JdccLogger;
  * La classe non è thread safe.
  */
 public class DccDownloaderKernel implements BotKernelManager {
-
     private String userNickname;
     private ManagerController controller;
     // Indica se c'è stata una richiesta di connessione ad un server;
@@ -28,6 +27,7 @@ public class DccDownloaderKernel implements BotKernelManager {
     private XdccSend xdccSendCommand;
     private boolean hasDownloadFinished;
     private boolean downloadIsStarting;
+    private boolean downloadInError;
 
     public DccDownloaderKernel() {
         userNickname = "";
@@ -37,6 +37,7 @@ public class DccDownloaderKernel implements BotKernelManager {
         isConnected = false;
         isInChannel = false;
         downloadIsStarting = false;
+        downloadInError = false;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class DccDownloaderKernel implements BotKernelManager {
         connect.serverPassword = serverPassword;
         connect.nickname = nickname;
         userNickname = nickname;
-        controller.sendCommand(connect);
+        controller.sendEvent(connect);
         serverConnectionRequestSent = true;
     }
 
@@ -74,7 +75,7 @@ public class DccDownloaderKernel implements BotKernelManager {
         joinChannel.password = channelPassword;
 
         if (isConnected) {
-            controller.sendCommand(joinChannel);
+            controller.sendEvent(joinChannel);
         } else {
             storeJoinChannelRequest(joinChannel);
         }
@@ -99,7 +100,7 @@ public class DccDownloaderKernel implements BotKernelManager {
         msg.message = message;
 
         if (isInChannel) {
-            controller.sendCommand(msg);
+            controller.sendEvent(msg);
         } else {
             storeMessageRequest(msg);
         }
@@ -115,7 +116,7 @@ public class DccDownloaderKernel implements BotKernelManager {
         xdccSend.packNumber = packNumber;
 
         if (isInChannel) {
-            controller.sendCommand(xdccSend);
+            controller.sendEvent(xdccSend);
         } else {
             storeXdccRequest(xdccSend);
         }
@@ -123,13 +124,14 @@ public class DccDownloaderKernel implements BotKernelManager {
 
     @Override
     public void onDonwloadIsStarting() {
+        JdccLogger.logger.trace("DccDownloaderKernel: onDonwloadIsStarting");
         downloadIsStarting = true;
     }
 
     @Override
     public void onDownloadComplete() {
         hasDownloadFinished = true;
-        sendDisconnectMessage();
+        sendDisconnectCommand();
     }
 
     @Override
@@ -137,43 +139,48 @@ public class DccDownloaderKernel implements BotKernelManager {
         XdccRemove removeCmd = new XdccRemove();
         removeCmd.botName = botname;
         removeCmd.packNumber = packNumber;
-        controller.sendCommand(removeCmd);
+        controller.sendEvent(removeCmd);
     }
 
     @Override
     public void onDownloadQueueFull(String botname, int packNumber) {
-        sendDisconnectMessage();
+        sendDisconnectCommand();
     }
 
     @Override
     public void onRemovedFromQueue(String botname) {
-        sendDisconnectMessage();
+        sendDisconnectCommand();
     }
 
     @Override
     public void onUnknownXdccMessage(String botname, String message) {
         JdccLogger.logger.info("DccDownloaderKernel: bot message \"{}\" not recognized.", message);
-        if (downloadIsStarting) {
-            // TODO: ???
-        } else {
-            sendDisconnectMessage();
-        }
+        // TODO: ???
     }
 
     @Override
     public void onDownloadError(Exception e) {
         // Si tenta una disconnessione corretta.
-        sendDisconnectMessage();
+        downloadInError = true;
+        sendDisconnectCommand();
     }
 
     @Override
     public void onServerDisconnected() {
         if (hasDownloadFinished) {
             JdccLogger.logger.info("DccDownloaderKernel: ending app gracefully.");
-            exitApp(0);
+            sendShutdownCommand(0);
         } else {
-            JdccLogger.logger.info("DccDownloaderKernel: ending app abruptly.");
-            exitApp(1);
+            if (downloadInError) {
+                JdccLogger.logger.info(
+                        "DccDownloaderKernel: ending app abruptly (download in error)");
+                sendShutdownCommand(1);
+            } else if (downloadIsStarting && !hasDownloadFinished) {
+                JdccLogger.logger.info("DccDownloaderKernel: server disconnected but download is still going. Try to finish anyway.");
+            } else {
+                JdccLogger.logger.info("DccDownloaderKernel: ending app abruptly.");
+                sendShutdownCommand(1);
+            }
         }
     }
 
@@ -181,7 +188,7 @@ public class DccDownloaderKernel implements BotKernelManager {
     public void onFatalError(Exception e) {
         JdccLogger.logger.info("DccDownloaderKernel: ending app with errors.");
         JdccLogger.logger.error("DccDownloaderKernel: fatal error.", e);
-        exitApp(1);
+        sendShutdownCommand(1);
     }
 
     @Override
@@ -195,8 +202,10 @@ public class DccDownloaderKernel implements BotKernelManager {
     }
 
     // METODI PRIVATI
-    private void exitApp(int status) {
-        System.exit(status);
+    private void sendShutdownCommand(int status) {
+        ShutDown shutDown = new ShutDown();
+        shutDown.exitStatus = status;
+        controller.sendEvent(shutDown);
     }
 
     private void storeJoinChannelRequest(JoinChannel joinChannel) {
@@ -211,23 +220,26 @@ public class DccDownloaderKernel implements BotKernelManager {
         xdccSendCommand = xdccSend;
     }
 
-    private void sendDisconnectMessage() {
+    private void sendDisconnectCommand() {
         Disconnect disconnect = new Disconnect();
-        controller.sendCommand(disconnect);
+        controller.sendEvent(disconnect);
     }
 
     private void sendPendingCommandsOnServerConnect() {
         if (joinChannelCommand != null) {
-            controller.sendCommand(joinChannelCommand);
+            controller.sendEvent(joinChannelCommand);
+            joinChannelCommand = null;
         }
     }
 
     private void sendPendingCommandsOnChannelJoined() {
         if (messageCommand != null) {
-            controller.sendCommand(messageCommand);
+            controller.sendEvent(messageCommand);
+            messageCommand = null;
         }
         if (xdccSendCommand != null) {
-            controller.sendCommand(xdccSendCommand);
+            controller.sendEvent(xdccSendCommand);
+            xdccSendCommand = null;
         }
     }
 

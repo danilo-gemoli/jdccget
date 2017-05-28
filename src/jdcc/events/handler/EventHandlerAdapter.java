@@ -76,4 +76,7 @@ public class EventHandlerAdapter implements EventHandler {
 
     @Override
     public void handle(ServerDisconnected event) { }
+
+    @Override
+    public void handle(ShutDown event) { }
 }

@@ -3,7 +3,6 @@ package jdcc.ircparser;
 import jdcc.exceptions.NoSupportedLanguageException;
 
 public interface IrcMessageParser {
-
     /***
      * Classe utilità per i linguaggi.
      */
