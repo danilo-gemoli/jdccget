@@ -1,26 +1,23 @@
 package jdcc;
 
+import jdcc.exceptions.SettingsLoadingException;
 import jdcc.kernels.app.Application;
 import jdcc.kernels.app.builder.ApplicationBuilder;
 import jdcc.kernels.app.builder.ConfigBuilder;
 import jdcc.exceptions.BuildErrorException;
-import jdcc.exceptions.NoFileSettingsFoundException;
-import jdcc.exceptions.SettingsParsingException;
 import jdcc.logger.JdccLogger;
 import jdcc.settings.Settings;
-import jdcc.settings.SettingsLoader;
+import jdcc.settings.SettingsManager;
 
 public class Main {
     public static void main(String[] argv) {
         JdccLogger.logger.info("Main: start");
+        SettingsManager settingsManager = new SettingsManager();
         Settings settings = null;
         try {
-            settings = SettingsLoader.load();
-        } catch (NoFileSettingsFoundException noFileSettingsFoundException) {
-            JdccLogger.logger.error("Main: noFileSettingsFoundException", noFileSettingsFoundException);
-            System.exit(1);
-        } catch (SettingsParsingException settingsParsingException) {
-            JdccLogger.logger.error("Main: settingsParsingException", settingsParsingException);
+            settings = settingsManager.load(argv);
+        } catch (SettingsLoadingException settingsLoadingException) {
+            JdccLogger.logger.error("Main: noFileSettingsFoundException", settingsLoadingException);
             System.exit(1);
         }
 

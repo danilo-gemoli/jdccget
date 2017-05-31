@@ -35,7 +35,7 @@
         <appender-ref ref="APPLICATION-FILE-ROLLING" />
     </logger>
 
-    <logger name="download" level="TRACE" additivity="false">
+    <logger name="download" level="OFF" additivity="false">
         <appender-ref ref="DOWNLOAD-FILE" />
     </logger>
 

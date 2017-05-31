@@ -1,6 +1,7 @@
 package jdcc.dispatcher;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -14,7 +15,7 @@ public class SingleThreadDispatcher implements Dispatcher, Runnable {
     private long timeToSleep;
 
     private Queue<Event> events;
-    private CopyOnWriteArrayList<DispatcherObserver> observers;
+    private List<DispatcherObserver> observers;
     private boolean isRunning;
 
     public SingleThreadDispatcher() {
@@ -40,24 +41,33 @@ public class SingleThreadDispatcher implements Dispatcher, Runnable {
 
     @Override
     public void addEvent(Event e) {
+        JdccLogger.logger.trace(
+                "SingleThreadDispatcher: addEvent - name: {} - id: {}"
+                , e.getClass().getCanonicalName(), e.getId());
         events.add(e);
     }
 
     @Override
     public void registerObserver(DispatcherObserver observer) {
+        JdccLogger.logger.trace(
+                "SingleThreadDispatcher: registerObserver - name: {}"
+                , observer.getClass().getCanonicalName());
         observers.add(observer);
     }
 
     @Override
     public void unregisterObserver(DispatcherObserver observer) {
+        JdccLogger.logger.trace(
+                "SingleThreadDispatcher: unregisterObserver - name: {}"
+                , observer.getClass().getCanonicalName());
         observers.remove(observer);
     }
 
     @Override
     public void run() {
-        JdccLogger.logger.trace("SingleThreadDispatcher: start");
+        JdccLogger.logger.trace("SingleThreadDispatcher: run");
         startDispatcher();
-        JdccLogger.logger.trace("SingleThreadDispatcher: is running {}", isRunning());
+        JdccLogger.logger.trace("SingleThreadDispatcher: run - is running {}", isRunning());
         while (isRunning()) {
             dispatch();
             try {

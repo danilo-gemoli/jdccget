@@ -1,6 +1,7 @@
 package jdcc.kernels.bot;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 /***
  * Rappresenta una connessione DCC con un client IRC.
@@ -18,7 +19,7 @@ public interface FileTransferConnection {
      *
      * @param filepath path + filename del file da scaricare.
      */
-    void setDestinationFilepath(String filepath);
+    void setDestinationFilepath(Path filepath);
 
     /***
      * Accetta il trasferimento del download.

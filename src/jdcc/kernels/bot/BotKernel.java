@@ -30,7 +30,6 @@ public interface BotKernel extends Kernel {
      */
     void connectToServer(String serverName, int serverPort, String nickname, String serverPassword);
 
-
     /***
      * Se connesso, chiude la connessione con il server.
      */
@@ -43,7 +42,6 @@ public interface BotKernel extends Kernel {
      * @param password la password del canale, di default è assente.
      */
     void joinChannel(String name, String password);
-
 
     /***
      * Invia un messaggio ad un canale o utente.

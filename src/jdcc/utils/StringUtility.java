@@ -15,9 +15,22 @@ public final class StringUtility {
             myStr = myStr.toLowerCase();
         }
         for (String word : words) {
-            if (!myStr.contains(word))
+            String currentWord = word;
+            if (!caseSensitive)
+                currentWord = currentWord.toLowerCase();
+            if (!myStr.contains(currentWord))
                 return false;
         }
         return true;
+    }
+
+    /***
+     * Testa se la stringa è nulla o vuota.
+     *
+     * @param str la stringa da testare.
+     * @return true se nulla o vuota, false altrimenti.
+     */
+    public static boolean isNullOrEmpty(String str) {
+        return str == null || str.equals("");
     }
 }

@@ -24,7 +24,6 @@ public class PircDownloadController extends AbstractController
 
     @Override
     public void handle(DownloadConnection event) {
-        // TODO: creare qui una nuova istanza di kernel per gestire più download.
         kernel.onNewFileTransferConnection(event.fileTransferConnection);
     }
 

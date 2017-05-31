@@ -1,6 +1,8 @@
-package jdcc.settings;
+package jdcc.settings.parser;
 
+import jdcc.exceptions.SettingsParsingException;
 import jdcc.logger.JdccLogger;
+import jdcc.settings.Settings;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,21 +19,26 @@ import java.util.regex.Pattern;
  * Le linee che contengono solo spazi sono ignorate.
  * Le linee che iniziano per "#" sono trattate come commenti e quindi ignorate.
  */
-class SimpleSettingsParser implements SettingsParser {
-
+public class SimpleFileSettingsParser extends AbstractSettingsParser implements FileSettingsParser {
     private File settingsFile;
     private FileReader fileReader;
     private BufferedReader bufReader;
     private Settings settings;
+    private String settingsFilePath;
 
-    public SimpleSettingsParser() {
+    public SimpleFileSettingsParser() {
         settings = new Settings();
     }
 
     @Override
-    public Settings parse(String filename) throws IOException {
+    public void setConfigFile(String configFile) {
+        this.settingsFilePath = configFile;
+    }
+
+    @Override
+    public Settings parse() throws SettingsParsingException {
         try {
-            initReader(filename);
+            initReader(settingsFilePath);
             String currentLine = readLine();
             while (currentLine != null) {
                 Token token = getTokenFromLine(currentLine);
@@ -41,8 +48,14 @@ class SimpleSettingsParser implements SettingsParser {
                 currentLine = readLine();
             }
             return settings;
+        } catch (Exception e) {
+            throw new SettingsParsingException();
         } finally {
-            closeReader();
+            try {
+                closeReader();
+            } catch (IOException ioEx) {
+                JdccLogger.logger.error("SimpleFileSettingsParser: parse", ioEx);
+            }
         }
     }
 
@@ -76,7 +89,7 @@ class SimpleSettingsParser implements SettingsParser {
                 parseHiChannelMsg(token.value);
                 break;
             default:
-                JdccLogger.logger.warn("Parsing: token \"{}\"=\"{}\" not recognized ", token.key,
+                JdccLogger.logger.warn("SimpleFileSettingsParser: token \"{}\"=\"{}\" not recognized ", token.key,
                         token.value);
         }
     }
@@ -89,9 +102,11 @@ class SimpleSettingsParser implements SettingsParser {
         boolean resume;
         try {
             resume = Boolean.parseBoolean(value);
-            settings.RESUME_DOWNLOAD = resume;
+            settings.RESUME_DOWNLOAD = new Boolean(resume);
         } catch (Exception e) {
-            JdccLogger.logger.error("Parsing: resume download parsing error " + value, e);
+            JdccLogger.logger.warn("SimpleFileSettingsParser: resume download error, using default");
+            settings.RESUME_DOWNLOAD = Settings.DEFAULT_RESUME_DOWNLOAD;
+            JdccLogger.logger.error("SimpleFileSettingsParser: resume download parsing error \"{}\"", value, e);
         }
     }
 
@@ -100,13 +115,19 @@ class SimpleSettingsParser implements SettingsParser {
         try {
             path = Paths.get(value);
         } catch (InvalidPathException e) {
-            JdccLogger.logger.error("Parsing: invalid path " + value, e);
+            JdccLogger.logger.error("SimpleFileSettingsParser: invalid path \"{}\"", value, e);
             return;
         }
         if (!Files.isDirectory(path)) {
-            JdccLogger.logger.error("Parsing: path {} is not a directory", value);
+            JdccLogger.logger.error(
+                    "SimpleFileSettingsParser: path \"{}\" is not a directory, using default", value);
+            settings.DOWNLOAD_PATH = Settings.DEFAULT_DOWNLOAD_PATH;
+        } else if (!Files.isWritable(path)) {
+            JdccLogger.logger.warn(
+                    "SimpleFileSettingsParser: path \"{}\" is not writable, using default", value);
+            settings.DOWNLOAD_PATH = Settings.DEFAULT_DOWNLOAD_PATH;
         } else {
-            settings.DOWNLOAD_PATH = value;
+            settings.DOWNLOAD_PATH = path;
         }
     }
 
@@ -118,9 +139,17 @@ class SimpleSettingsParser implements SettingsParser {
         int port;
         try {
             port = Integer.parseInt(value);
-            settings.SERVER_PORT = port;
+            if (!(0 <= port && port < 65536)) {
+                JdccLogger.logger.warn(
+                        "SimpleFileSettingsParser: server port not in a validrange, using default");
+                settings.SERVER_PORT = Settings.DEFAULT_SERVER_PORT;
+            } else {
+                settings.SERVER_PORT = new Integer(port);
+            }
         } catch (Exception e) {
-            JdccLogger.logger.warn("Parsing: error during parsing server port " + value, e);
+            JdccLogger.logger.warn("SimpleFileSettingsParser: server port error, using default");
+            settings.SERVER_PORT = Settings.DEFAULT_SERVER_PORT;
+            JdccLogger.logger.warn("SimpleFileSettingsParser: error during parsing server port \"{}\"", value, e);
         }
     }
 
@@ -140,9 +169,10 @@ class SimpleSettingsParser implements SettingsParser {
         int packNum;
         try {
             packNum = Integer.parseInt(value);
-            settings.PACK_NUMBER = packNum;
+            settings.PACK_NUMBER = new Integer(packNum);
         } catch (Exception e) {
-            JdccLogger.logger.warn("Parsing: error during parsing pack number " + value, e);
+            settings.PACK_NUMBER = null;
+            JdccLogger.logger.warn("SimpleFileSettingsParser: error during parsing pack number \"{}\"", value, e);
         }
     }
 
@@ -151,7 +181,7 @@ class SimpleSettingsParser implements SettingsParser {
         try {
             token.parseLine();
         } catch (Exception e) {
-            JdccLogger.logger.warn("Parsing: error during tokenizing line \"" + currentLine + "\"", e);
+            JdccLogger.logger.warn("SimpleFileSettingsParser: error during tokenizing line \"{}\"", currentLine, e);
         }
         return token;
     }
@@ -171,7 +201,6 @@ class SimpleSettingsParser implements SettingsParser {
     }
 
     private class Token {
-
         public String key;
         public String value;
         public boolean isAComment;
@@ -211,5 +240,4 @@ class SimpleSettingsParser implements SettingsParser {
             }
         }
     }
-
 }

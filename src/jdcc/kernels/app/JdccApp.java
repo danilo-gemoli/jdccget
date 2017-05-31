@@ -15,6 +15,7 @@ import jdcc.kernels.botmanager.BotKernelManager;
 import jdcc.kernels.downloadmanager.DownloadKernel;
 import jdcc.kernels.downloadmanager.output.DownloadOutputWriter;
 import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
+import jdcc.logger.JdccLogger;
 
 public class JdccApp implements Application {
     private Dispatcher dispatcher;
@@ -151,6 +152,7 @@ public class JdccApp implements Application {
     }
 
     private void doDispose() {
+        JdccLogger.logger.info("JdccApp: disposing");
         dispatcher.unregisterObserver(botController);
         dispatcher.unregisterObserver(downloadController);
         dispatcher.unregisterObserver(managerController);
@@ -159,6 +161,7 @@ public class JdccApp implements Application {
     }
 
     private void exit() {
+        JdccLogger.logger.info("JdccApp: exit: {}", exitStatus);
         System.exit(exitStatus);
     }
 

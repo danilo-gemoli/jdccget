@@ -45,9 +45,9 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     @Override
     public void connectToServer(String serverName, int serverPort, String nickname, String serverPassword)
     {
-        JdccLogger.logger.debug("PircBot: join server request. name: {} password: {} port: {} nickname {}",
+        JdccLogger.logger.debug(
+                "PircBot: connectToServer - name: {} password: {} port: {} nickname {}",
                  serverName, serverPassword, serverPort, nickname);
-
         configure(nickname, serverName, serverPassword);
         setListener();
         startBot();
@@ -55,7 +55,8 @@ public class PircBot extends ListenerAdapter implements BotKernel {
 
     @Override
     public void joinChannel(String channelName, String channelPassword) {
-        JdccLogger.logger.debug("PircBot: join channel request. name: {} password: {}", channelName, channelPassword);
+        JdccLogger.logger.debug("PircBot: joinChannel - name: {} password: {}"
+                , channelName, channelPassword);
         OutputIRC outputIrc = new OutputIRC(pircBot);
 
         if (channelPassword != null && !channelPassword.equals("")) {
@@ -87,10 +88,10 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     @Override
     public void disconnect() {
         if (pircBot.isConnected()) {
-            JdccLogger.logger.debug("PircBot: disconnecting...");
+            JdccLogger.logger.debug("PircBot: disconnect");
             OutputIRC outputIrc = new OutputIRC(pircBot);
             outputIrc.quitServer();
-            JdccLogger.logger.debug("PircBot: disconnected");
+            JdccLogger.logger.debug("PircBot: disconnect - done");
         }
     }
 
@@ -138,6 +139,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     public void onKick(KickEvent event) throws Exception {
         Kick kickMsg = new Kick();
         kickMsg.reason = event.getReason();
+        JdccLogger.logger.info("PircBot: onKick - reason {}", kickMsg.reason);
         controller.sendEvent(kickMsg);
     }
     // IRC EVENT HANDLERS
@@ -161,17 +163,17 @@ public class PircBot extends ListenerAdapter implements BotKernel {
         PircBot me = this;
         Thread botThread = new Thread(() -> {
             try {
-                JdccLogger.logger.debug("PircBot: starting...");
+                JdccLogger.logger.debug("PircBot: startBot");
                 pircBot.startBot();
-                JdccLogger.logger.debug("PircBot: endend");
+                JdccLogger.logger.debug("PircBot: startBot - end");
             } catch (IOException e) {
-                JdccLogger.logger.error("PircBot: start IOError", e);
+                JdccLogger.logger.error("PircBot: startBot - IOError", e);
                 me.sendFatalError(e);
             } catch (IrcException e) {
-                JdccLogger.logger.error("PircBot: start IRCError", e);
+                JdccLogger.logger.error("PircBot: startBot - IRCError", e);
                 me.sendFatalError(e);
             } catch (Exception e) {
-                JdccLogger.logger.error("PircBot: generic error", e);
+                JdccLogger.logger.error("PircBot: startBot - error", e);
                 me.sendFatalError(e);
             }
         });
@@ -195,6 +197,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
 
     private void handleBotMessage(GenericMessageEvent event) {
         String message = event.getMessage();
+        JdccLogger.logger.info("PircBot: handleBotMessage - message {}", message);
         XdccMessageType msgType = messageParser.parseXdccMessage(message);
         String botName = event.getUser().getNick();
 

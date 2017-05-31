@@ -154,8 +154,10 @@ public class DccDownloaderKernel implements BotKernelManager {
 
     @Override
     public void onUnknownXdccMessage(String botname, String message) {
-        JdccLogger.logger.info("DccDownloaderKernel: bot message \"{}\" not recognized.", message);
-        // TODO: ???
+        JdccLogger.logger.info(
+                "DccDownloaderKernel: onUnknownXdccMessage - message \"{}\""
+                , message);
+        // TODO: ?
     }
 
     @Override
@@ -168,17 +170,17 @@ public class DccDownloaderKernel implements BotKernelManager {
     @Override
     public void onServerDisconnected() {
         if (hasDownloadFinished) {
-            JdccLogger.logger.info("DccDownloaderKernel: ending app gracefully.");
+            JdccLogger.logger.info("DccDownloaderKernel: onServerDisconnected - ending app gracefully.");
             sendShutdownCommand(0);
         } else {
             if (downloadInError) {
                 JdccLogger.logger.info(
-                        "DccDownloaderKernel: ending app abruptly (download in error)");
+                "DccDownloaderKernel: onServerDisconnected - ending app abruptly (download in error)");
                 sendShutdownCommand(1);
             } else if (downloadIsStarting && !hasDownloadFinished) {
-                JdccLogger.logger.info("DccDownloaderKernel: server disconnected but download is still going. Try to finish anyway.");
+                JdccLogger.logger.info("DccDownloaderKernel: onServerDisconnected - server disconnected but download is still going. Try to finish anyway.");
             } else {
-                JdccLogger.logger.info("DccDownloaderKernel: ending app abruptly.");
+                JdccLogger.logger.info("DccDownloaderKernel: onServerDisconnected - ending app abruptly.");
                 sendShutdownCommand(1);
             }
         }
@@ -186,14 +188,14 @@ public class DccDownloaderKernel implements BotKernelManager {
 
     @Override
     public void onFatalError(Exception e) {
-        JdccLogger.logger.info("DccDownloaderKernel: ending app with errors.");
-        JdccLogger.logger.error("DccDownloaderKernel: fatal error.", e);
+        JdccLogger.logger.info("DccDownloaderKernel: onFatalError - ending app with errors.");
+        JdccLogger.logger.error("DccDownloaderKernel: onFatalError", e);
         sendShutdownCommand(1);
     }
 
     @Override
     public void onKick(String reason) {
-        // TODO
+        // TODO: ?
     }
 
     @Override

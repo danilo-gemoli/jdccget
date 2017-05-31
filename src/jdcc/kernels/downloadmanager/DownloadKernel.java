@@ -6,6 +6,8 @@ import jdcc.controllers.download.DownloadController;
 import jdcc.kernels.downloadmanager.output.DownloadOutputWriter;
 import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
 
+import java.nio.file.Path;
+
 public interface DownloadKernel extends Kernel {
     /***
      * Imposta l'oggetto che si occupa delle statistiche del download.
@@ -26,7 +28,7 @@ public interface DownloadKernel extends Kernel {
      *
      * @param downloadPath
      */
-    void setDownloadPath(String downloadPath);
+    void setDownloadPath(Path downloadPath);
 
     /***
      * Imposta il writer dello stato del download.

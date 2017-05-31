@@ -11,12 +11,17 @@ import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
 import jdcc.kernels.downloadmanager.statistics.Size;
 import jdcc.logger.JdccLogger;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferCallback {
     private DownloadController controller;
     private DownloadStatistics statistics;
-    private String downloadPath;
+    private Path downloadPath;
     private FileTransferConnection transferConnection;
     private boolean resumeDownload;
     private DownloadOutputWriter outputWriter;
@@ -50,7 +55,7 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
     }
 
     @Override
-    public void setDownloadPath(String downloadPath) {
+    public void setDownloadPath(Path downloadPath) {
         this.downloadPath = downloadPath;
     }
 
@@ -62,13 +67,16 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
     @Override
     public void onNewFileTransferConnection(FileTransferConnection fileTransferConnection) {
         transferConnection = fileTransferConnection;
-        String filename = fileTransferConnection.getFilename();
-        String fullDownloadPath = downloadPath + filename;
-        Thread downloadThread = new Thread(this);
-        setDownloadFullpath(fullDownloadPath);
         fileTransferConnection.setCallback(this);
-        sendDownloadIsStartingMessage();
+
+        String filename = fileTransferConnection.getFilename();
+        makeDownloadPathIfNotExists();
+        Path fullDownloadPath = getFullDownloadPath(filename);
+        setDownloadFullpath(fullDownloadPath);
         outputWriter.setFileName(filename);
+
+        Thread downloadThread = new Thread(this);
+        sendDownloadIsStartingMessage();
         downloadThread.start();
     }
 
@@ -108,8 +116,22 @@ public class ThreadedDownload implements DownloadKernel, Runnable, FileTransferC
         }
     }
 
-    protected void setDownloadFullpath(String fullpath) {
+    protected void setDownloadFullpath(Path fullpath) {
         transferConnection.setDestinationFilepath(fullpath);
+    }
+
+    private Path getFullDownloadPath(String filename) {
+        return Paths.get(downloadPath.toString(), filename);
+    }
+
+    private void makeDownloadPathIfNotExists() {
+        if (Files.notExists(downloadPath, LinkOption.NOFOLLOW_LINKS)) {
+            JdccLogger.logger.info(
+                    "ThreadedDownload: download folder \"{}\" does not exists: creating."
+                    , downloadPath);
+            File f = downloadPath.toFile();
+            f.mkdirs();
+        }
     }
 
     private void setStatisticsStartTime(long time) {

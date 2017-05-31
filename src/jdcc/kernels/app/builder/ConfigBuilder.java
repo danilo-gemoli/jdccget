@@ -98,7 +98,7 @@ public class ConfigBuilder implements ApplicationBuilder {
         downloadKernel.setController(downloadController);
         downloadKernel.setOutputWriter(downloadOutputWriter);
         downloadKernel.setDownloadPath(settings.DOWNLOAD_PATH);
-        downloadKernel.setResumeDownload(settings.RESUME_DOWNLOAD);
+        downloadKernel.setResumeDownload(settings.RESUME_DOWNLOAD.booleanValue());
         downloadController.setKernel(downloadKernel);
 
         app.setController(appController);
@@ -118,11 +118,11 @@ public class ConfigBuilder implements ApplicationBuilder {
         app.setDispatcher(dispatcher);
 
         app.setServerHostname(settings.SERVER_HOSTNAME);
-        app.setServerPort(settings.SERVER_PORT);
+        app.setServerPort(settings.SERVER_PORT.intValue());
         app.setChannel(settings.CHANNEL);
         app.setHiChannelMessage(settings.HI_CHANNEL_MSG);
         app.setBotName(settings.BOT_NAME);
-        app.setPackNumber(settings.PACK_NUMBER);
+        app.setPackNumber(settings.PACK_NUMBER.intValue());
         app.setNickname(settings.NICKNAME);
 
         return app;

@@ -7,12 +7,13 @@ import org.pircbotx.hooks.events.IncomingFileTransferEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class PircFileTransfer implements FileTransferConnection {
     private IncomingFileTransferEvent fileTransferEvent;
     private FileTransfer fileTransfer;
     private boolean resumeDownload;
-    private String destinationPath;
+    private Path destinationPath;
     private FileTransferCallback fileTransferCallback;
     private boolean hasBeenResumed;
     private long partialFileStartLenght;
@@ -27,7 +28,7 @@ public class PircFileTransfer implements FileTransferConnection {
     }
 
     @Override
-    public void setDestinationFilepath(String filepath){
+    public void setDestinationFilepath(Path filepath){
         destinationPath = filepath;
     }
 
@@ -78,7 +79,7 @@ public class PircFileTransfer implements FileTransferConnection {
 
     // METODI PRIVATI
     private FileTransfer doAcceptResume() throws IOException, InterruptedException {
-        File partialFile = new File(destinationPath);
+        File partialFile = destinationPath.toFile();
         if (!partialFile.exists()) {
             throw new FileNotFoundException();
         }
@@ -88,6 +89,6 @@ public class PircFileTransfer implements FileTransferConnection {
     }
 
     private FileTransfer doAccept() throws IOException {
-        return fileTransferEvent.accept(new File(destinationPath));
+        return fileTransferEvent.accept(destinationPath.toFile());
     }
 }
