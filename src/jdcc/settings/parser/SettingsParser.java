@@ -1,14 +1,16 @@
 package jdcc.settings.parser;
 
 import jdcc.exceptions.SettingsParsingException;
-import jdcc.settings.Settings;
+import jdcc.settings.entries.SettingsEntry;
+
+import java.util.List;
 
 public interface SettingsParser {
     /***
      * Fa il parsing delle impostazioni.
      *
      * @throws SettingsParsingException
-     * @return il file di configurazione.
+     * @return una lista di oggetti "impostazione".
      */
-    Settings parse() throws SettingsParsingException;
+    List<SettingsEntry> parse() throws SettingsParsingException;
 }
