@@ -7,8 +7,10 @@ package jdcc.settings.entries;
  * SettingsEntry.
  */
 public class SettingsEntry {
-    public String name;
-    public Object value;
+    public String name = "";
+    public Object value = "";
+
+    public SettingsEntry() { }
 
     public SettingsEntry(String name, Object value) {
         this.name = name;

@@ -74,7 +74,12 @@ public class KeywordsIrcMessageParser implements IrcMessageParser {
 
     private XdccMessageType doParseXdccMessage(KeywordsDictionary dict, String msg) {
         if (StringUtility.stringContainsWords(msg, dict.getDonwloadAvailableKeywords(), caseSensitive)) {
-            return XdccMessageType.DOWNLOADING;
+            if (StringUtility.stringContainsWords(msg
+                    , dict.getDownloadResumeSupportedKeywords(), caseSensitive)) {
+                return XdccMessageType.DOWNLOAD_RESUME_SUPPORTED;
+            } else {
+                return XdccMessageType.DOWNLOADING;
+            }
         } else if (StringUtility.stringContainsWords(msg, dict.getDonwloadInQueueKeywords(),
                 caseSensitive)) {
             return XdccMessageType.IN_QUEUE;
@@ -87,9 +92,6 @@ public class KeywordsIrcMessageParser implements IrcMessageParser {
         } else if (StringUtility.stringContainsWords(msg
                 , dict.getBandwidthLimitKeywords(), caseSensitive)) {
             return XdccMessageType.BANDWIDTH_LIMIT;
-        } else if (StringUtility.stringContainsWords(msg
-                , dict.getDownloadResumeSupportedKeywords(), caseSensitive)) {
-            return XdccMessageType.DOWNLOAD_RESUME_SUPPORTED;
         }
         return XdccMessageType.UNKNOWN;
     }

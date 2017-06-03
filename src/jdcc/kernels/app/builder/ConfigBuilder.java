@@ -99,6 +99,7 @@ public class ConfigBuilder implements ApplicationBuilder {
         downloadKernel.setOutputWriter(downloadOutputWriter);
         downloadKernel.setDownloadPath(settings.DOWNLOAD_PATH);
         downloadKernel.setResumeDownload(settings.RESUME_DOWNLOAD.booleanValue());
+        downloadController.setTimeToWaitDownloadMessage(settings.TIME_TO_WAIT_DOWNLOAD_MSG.longValue());
         downloadController.setKernel(downloadKernel);
 
         app.setController(appController);

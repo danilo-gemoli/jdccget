@@ -146,6 +146,7 @@ public class PircBot extends ListenerAdapter implements BotKernel {
 
     // METODI PRIVATI
     private void configure(String nickname, String serverName, String serverPassword) {
+        // TODO: impostare gli altri nomi dell'utente.
         pircBotConfigurationBuilder = new Configuration.Builder()
                 .setName(nickname)
                 .setServerPassword(serverPassword)
@@ -201,10 +202,13 @@ public class PircBot extends ListenerAdapter implements BotKernel {
         XdccMessageType msgType = messageParser.parseXdccMessage(message);
         String botName = event.getUser().getNick();
 
-        if (msgType == XdccMessageType.DOWNLOADING
-                || msgType == XdccMessageType.BANDWIDTH_LIMIT
-                || msgType == XdccMessageType.DOWNLOAD_RESUME_SUPPORTED) {
+        if (msgType == XdccMessageType.BANDWIDTH_LIMIT) {
             // Tutto bene, non fare niente qui.
+        } else if (msgType == XdccMessageType.DOWNLOADING
+            || msgType == XdccMessageType.DOWNLOAD_RESUME_SUPPORTED) {
+            XdccDownloading downloadingMsg = new XdccDownloading();
+            downloadingMsg.resumeSupported = (msgType == XdccMessageType.DOWNLOAD_RESUME_SUPPORTED);
+            controller.sendEvent(downloadingMsg);
         } else if (msgType == XdccMessageType.IN_QUEUE) {
             int packNumber = messageParser.getPackNumberFromMessage(message);
             XdccDownloadInQueue inQueueMsg = new XdccDownloadInQueue();

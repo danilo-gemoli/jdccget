@@ -66,6 +66,9 @@ public class EventHandlerAdapter implements EventHandler {
     public void handle(XdccRemovedFromQueue event) { }
 
     @Override
+    public void handle(XdccDownloading event) { }
+
+    @Override
     public void handle(XdccUnknown event) { }
 
     @Override

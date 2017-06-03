@@ -29,7 +29,7 @@ public class SettingsManager {
         semanticValidator = new SemanticValidator();
         validatorManager = new ValidatorManager();
         fileSettingsParser = new SimpleFileSettingsParser();
-        cmdSettingsParser = new SimpleCmdSettingsParse();
+        cmdSettingsParser = new SimpleCmdSettingsParser();
     }
 
     /***
@@ -50,6 +50,10 @@ public class SettingsManager {
         } catch (CommandLineArgsMalformedException cmdEx) {
             JdccLogger.logger.error("SettingsManager: load - CommandLineArgsMalformedException", cmdEx);
             merge = false;
+            fileSettingsPath = Settings.DEFAULT_CONFIG_PATH;
+        }
+
+        if (fileSettingsPath == null) {
             fileSettingsPath = Settings.DEFAULT_CONFIG_PATH;
         }
 

@@ -49,6 +49,8 @@ public interface EventHandler {
 
     void handle(XdccRemovedFromQueue event);
 
+    void handle(XdccDownloading event);
+
     void handle(XdccUnknown event);
 
     void handle(FatalError event);

@@ -11,6 +11,7 @@ public final class Settings {
     public static final boolean DEFAULT_RESUME_DOWNLOAD = true;
     public static final Path DEFAULT_DOWNLOAD_PATH = Paths.get("./downloaded/test");
     public static final String DEFAULT_HI_CHANNEL_MSG = "hi";
+    public static final long DEFAULT_TIME_TO_WAIT_DOWNLOAD_MSG = 3000;
 
     public Path     CONFIG_PATH;
     public String   SERVER_HOSTNAME;
@@ -22,6 +23,8 @@ public final class Settings {
     public Boolean  RESUME_DOWNLOAD;
     public Path     DOWNLOAD_PATH;
     public String   HI_CHANNEL_MSG;
+    // TODO: renderlo impostabile da cmd e file.
+    public Long     TIME_TO_WAIT_DOWNLOAD_MSG;
 
     protected void assignDefaultToNullValues() {
         CONFIG_PATH = Utility.getValueNotNullOrDefault(CONFIG_PATH, Settings.DEFAULT_CONFIG_PATH);
@@ -29,6 +32,7 @@ public final class Settings {
         SERVER_PORT = Utility.getValueNotNullOrDefault(SERVER_PORT, Settings.DEFAULT_SERVER_PORT);
         RESUME_DOWNLOAD = Utility.getValueNotNullOrDefault(RESUME_DOWNLOAD, Settings.DEFAULT_RESUME_DOWNLOAD);
         DOWNLOAD_PATH = Utility.getValueNotNullOrDefault(DOWNLOAD_PATH, Settings.DEFAULT_DOWNLOAD_PATH);
+        TIME_TO_WAIT_DOWNLOAD_MSG = Utility.getValueNotNullOrDefault(TIME_TO_WAIT_DOWNLOAD_MSG, Settings.DEFAULT_TIME_TO_WAIT_DOWNLOAD_MSG);
     }
 
     protected Settings overwrite(Settings toOverwrite) {
@@ -43,6 +47,7 @@ public final class Settings {
         result.RESUME_DOWNLOAD = Utility.getValueNotNullOrDefault(RESUME_DOWNLOAD, toOverwrite.RESUME_DOWNLOAD);
         result.DOWNLOAD_PATH = Utility.getValueNotNullOrDefault(DOWNLOAD_PATH, toOverwrite.DOWNLOAD_PATH);
         result.HI_CHANNEL_MSG = Utility.getValueNotNullOrDefault(HI_CHANNEL_MSG, toOverwrite.HI_CHANNEL_MSG);
+        result.TIME_TO_WAIT_DOWNLOAD_MSG = Utility.getValueNotNullOrDefault(TIME_TO_WAIT_DOWNLOAD_MSG, toOverwrite.TIME_TO_WAIT_DOWNLOAD_MSG);
         return result;
     }
 }

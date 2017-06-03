@@ -89,6 +89,13 @@ public class PircFileTransfer implements FileTransferConnection {
     }
 
     private FileTransfer doAccept() throws IOException {
+        File partialFile = destinationPath.toFile();
+        if (partialFile.exists()) {
+            if (!partialFile.delete()) {
+                JdccLogger.logger.warn("PircFileTransfer: impossible to delete file \"{}\"",
+                        destinationPath.toString());
+            }
+        }
         return fileTransferEvent.accept(destinationPath.toFile());
     }
 }
