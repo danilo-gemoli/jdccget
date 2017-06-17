@@ -26,9 +26,12 @@ public interface BotKernel extends Kernel {
      * @param serverName nome del server.
      * @param serverPort porta del server, di default è 6667.
      * @param nickname il nickname dell'utente.
+     * @param realname il nome reale dell'utente.
+     * @param loginname il nome dell'utente da usare come hostname.
      * @param serverPassword password del server, di default è "".
      */
-    void connectToServer(String serverName, int serverPort, String nickname, String serverPassword);
+    void connectToServer(String serverName, int serverPort, String nickname
+            , String realname, String loginname, String serverPassword);
 
     /***
      * Se connesso, chiude la connessione con il server.

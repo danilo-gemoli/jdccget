@@ -34,6 +34,8 @@ public class JdccApp implements Application {
     private int packNumber;
     private String channel;
     private String nickname;
+    private String realname;
+    private String loginname;
     private String serverHostName;
     private int serverPort;
 
@@ -136,6 +138,16 @@ public class JdccApp implements Application {
     }
 
     @Override
+    public void setRealname(String realname) {
+        this.realname = realname;
+    }
+
+    @Override
+    public void setLoginname(String loginname) {
+        this.loginname = loginname;
+    }
+
+    @Override
     public void setServerHostname(String serverHostname) {
         this.serverHostName = serverHostname;
     }
@@ -189,6 +201,8 @@ public class JdccApp implements Application {
     private void sendConnectRequest() {
         ServerConnectionRequest connectionRequest = new ServerConnectionRequest();
         connectionRequest.nickname = nickname;
+        connectionRequest.realname = realname;
+        connectionRequest.loginname = loginname;
         connectionRequest.serverName = serverHostName;
         connectionRequest.port = serverPort;
         dispatcher.addEvent(connectionRequest);

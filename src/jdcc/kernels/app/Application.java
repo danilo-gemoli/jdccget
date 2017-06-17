@@ -66,6 +66,10 @@ public interface Application extends Kernel {
 
     void setNickname(String nickname);
 
+    void setRealname(String realname);
+
+    void setLoginname(String realname);
+
     void setServerHostname(String serverHostname);
 
     void setServerPort(int serverPort);

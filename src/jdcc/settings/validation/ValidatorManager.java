@@ -48,6 +48,7 @@ public class ValidatorManager {
                         dict.setValueOnSettings(settings, entry);
                     }
                     found = true;
+                    break;
                 }
             }
             if (!found) {

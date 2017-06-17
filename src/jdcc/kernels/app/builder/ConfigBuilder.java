@@ -26,7 +26,9 @@ import jdcc.ircparser.IrcMessageParser;
 import jdcc.ircparser.keywordsparser.KeywordsIrcMessageParser;
 import jdcc.kernels.downloadmanager.statistics.DownloadStatistics;
 import jdcc.kernels.downloadmanager.statistics.SimpleDownloadStatistics;
+import jdcc.logger.JdccLogger;
 import jdcc.settings.Settings;
+import jdcc.utils.StringUtility;
 
 public class ConfigBuilder implements ApplicationBuilder {
     private Settings settings;
@@ -51,6 +53,8 @@ public class ConfigBuilder implements ApplicationBuilder {
 
     @Override
     public Application build() throws BuildErrorException {
+        checkSettings();
+
         Application app = new JdccApp();
         appController = new MainAppController();
 
@@ -101,6 +105,7 @@ public class ConfigBuilder implements ApplicationBuilder {
         downloadKernel.setResumeDownload(settings.RESUME_DOWNLOAD.booleanValue());
         downloadController.setTimeToWaitDownloadMessage(settings.TIME_TO_WAIT_DOWNLOAD_MSG.longValue());
         downloadController.setKernel(downloadKernel);
+        downloadController.setBotNickname(settings.BOT_NAME);
 
         app.setController(appController);
         app.setBotKernel(botKernel);
@@ -125,7 +130,46 @@ public class ConfigBuilder implements ApplicationBuilder {
         app.setBotName(settings.BOT_NAME);
         app.setPackNumber(settings.PACK_NUMBER.intValue());
         app.setNickname(settings.NICKNAME);
+        app.setRealname(settings.REALNAME);
+        app.setLoginname(StringUtility.isNullOrEmpty(settings.LOGINNAME)? settings.REALNAME:
+                settings.LOGINNAME);
 
         return app;
+    }
+
+    private void checkSettings() throws BuildErrorException {
+        if (settings == null) {
+            throw new BuildErrorException("You must specify the application settings.");
+        }
+        if (StringUtility.isNullOrEmpty(settings.SERVER_HOSTNAME)) {
+            throw new BuildErrorException("You must specify a server hostname.");
+        }
+        if (settings.SERVER_PORT == null) {
+            throw new BuildErrorException("You must specify a server port.");
+        }
+        if (settings.CHANNEL == null) {
+            throw new BuildErrorException("You must specify an IRC channel.");
+        }
+        if (StringUtility.isNullOrEmpty(settings.BOT_NAME)) {
+            throw new BuildErrorException("You must specify a bot name.");
+        }
+        if (settings.PACK_NUMBER == null) {
+            throw new BuildErrorException("You must specify a package number.");
+        }
+        if (StringUtility.isNullOrEmpty(settings.NICKNAME)) {
+            throw new BuildErrorException("You must specify a nickname.");
+        }
+        if (StringUtility.isNullOrEmpty(settings.REALNAME)) {
+            throw new BuildErrorException("You must specify a realname.");
+        }
+        if (StringUtility.isNullOrEmpty(settings.LOGINNAME)) {
+            JdccLogger.logger.info("ConfigBuilder: loginname is null, using realname instead.");
+        }
+        if (settings.RESUME_DOWNLOAD == null) {
+            throw new BuildErrorException("You must specify the resume download value.");
+        }
+        if (settings.TIME_TO_WAIT_DOWNLOAD_MSG == null) {
+            throw new BuildErrorException("You must specify a time to wait download message.");
+        }
     }
 }

@@ -10,23 +10,31 @@
 
 server-port=6667
 nickname=jdcc-test
+realname=jdcc-real-test
+loginname=jdcc-login
 
-#server-hostname=irc.crocmax.net
-#channel=#cm-plus
-#bot-name=CM|SiNgOLi|MP3|03
-#pack-number=101
+server-hostname=irc.crocmax.net
+channel=#cm-plus
+bot-name=CM|SiNgOLi|MP3|03
+pack-number=101
 
 #server-hostname=irc.openjoke.biz
 #channel=#V3L0X
 #bot-name=V3L0X|CiNeMa|01
 #pack-number=65
 
-server-hostname=irc.futureshell.net
-channel=#the_pub
-bot-name=THE|PUB|1|CuLT|1
-pack-number=14
+#server-hostname=irc.futureshell.net
+#channel=#the_pub
+#bot-name=THE|PUB|1|CuLT|1
+#pack-number=14
+
+
+#server-hostname=irc.openjoke.org
+#channel=#V3L0X
+#bot-name=V3L0X|OLD|02
+#pack-number=116
 
 hi-channel-msg=hi
 
-resume-download=true
+resume-download=false
 download-path=/home/danilo/Downloads/jdccget/

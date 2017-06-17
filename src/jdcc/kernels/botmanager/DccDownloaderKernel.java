@@ -53,12 +53,14 @@ public class DccDownloaderKernel implements BotKernelManager {
 
     @Override
     public void onServerConnectRequest(String serverName, String serverPassword, int serverPort
-            , String nickname) {
+            , String nickname, String realname, String loginname) {
         Connect connect = new Connect();
         connect.serverName = serverName;
         connect.port = serverPort;
         connect.serverPassword = serverPassword;
         connect.nickname = nickname;
+        connect.realname = realname;
+        connect.loginname = loginname;
         userNickname = nickname;
         controller.sendEvent(connect);
         serverConnectionRequestSent = true;

@@ -38,6 +38,16 @@ public class SyntacticValidator extends AbstractValidator {
     }
 
     @Override
+    public void validateRealname(SettingsEntry entry) {
+
+    }
+
+    @Override
+    public void validateLoginname(SettingsEntry entry) {
+
+    }
+
+    @Override
     public void validateChannel(SettingsEntry entry) {
 
     }

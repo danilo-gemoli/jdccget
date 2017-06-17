@@ -10,7 +10,13 @@ public interface FileTransferConnection {
 
     /***
      *
-     * @return il nome del file che il il client vuole mandarci.
+     * @return il nome dell'utente che sta mandando la richiesta, "" se non disponibile.
+     */
+    String getUserNickname();
+
+    /***
+     *
+     * @return il nome del file che il client vuole mandarci.
      */
     String getFilename();
 

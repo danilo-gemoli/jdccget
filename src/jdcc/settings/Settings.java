@@ -17,6 +17,8 @@ public final class Settings {
     public String   SERVER_HOSTNAME;
     public Integer  SERVER_PORT;
     public String   NICKNAME;
+    public String   REALNAME;
+    public String   LOGINNAME;
     public String   CHANNEL;
     public String   BOT_NAME;
     public Integer  PACK_NUMBER;
@@ -41,6 +43,8 @@ public final class Settings {
         result.SERVER_HOSTNAME = Utility.getValueNotNullOrDefault(SERVER_HOSTNAME, toOverwrite.SERVER_HOSTNAME);
         result.SERVER_PORT = Utility.getValueNotNullOrDefault(SERVER_PORT, toOverwrite.SERVER_PORT);
         result.NICKNAME = Utility.getValueNotNullOrDefault(NICKNAME, toOverwrite.NICKNAME);
+        result.REALNAME = Utility.getValueNotNullOrDefault(REALNAME, toOverwrite.REALNAME);
+        result.LOGINNAME = Utility.getValueNotNullOrDefault(LOGINNAME, toOverwrite.LOGINNAME);
         result.CHANNEL = Utility.getValueNotNullOrDefault(CHANNEL, toOverwrite.CHANNEL);
         result.BOT_NAME = Utility.getValueNotNullOrDefault(BOT_NAME, toOverwrite.BOT_NAME);
         result.PACK_NUMBER = Utility.getValueNotNullOrDefault(PACK_NUMBER, toOverwrite.PACK_NUMBER);

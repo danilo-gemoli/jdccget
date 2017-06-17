@@ -11,4 +11,11 @@ public interface DownloadController extends Controller {
      * @param timeToWaitMillis il tempo per cui aspettare in millisecondi.
      */
     void setTimeToWaitDownloadMessage(long timeToWaitMillis);
+
+    /***
+     * Imposta il nickname del bot a cui si è fatta la richiesta di download.
+     *
+     * @param nickname il nickname del bot.
+     */
+    void setBotNickname(String nickname);
 }

@@ -150,6 +150,78 @@ public enum Dictionary {
             validator.validateNickname(entry);
         }
     },
+    REALNAME {
+        @Override
+        public String getCmdOptName() {
+            return "rn";
+        }
+
+        @Override
+        public String getCmdLongOptName() {
+            return "realname";
+        }
+
+        @Override
+        public String getCmdDescription() {
+            return "irc realname";
+        }
+
+        @Override
+        public String getFileSettingsName() {
+            return "realname";
+        }
+
+        @Override
+        public String getSettingsEntryName() {
+            return "realname";
+        }
+
+        @Override
+        public void setValueOnSettings(Settings settings, SettingsEntry entry) {
+            settings.REALNAME = (String) entry.value;
+        }
+
+        @Override
+        public void validate(Validator validator, SettingsEntry entry) {
+            validator.validateRealname(entry);
+        }
+    },
+    LOGINNAME {
+        @Override
+        public String getCmdOptName() {
+            return "ln";
+        }
+
+        @Override
+        public String getCmdLongOptName() {
+            return "loginname";
+        }
+
+        @Override
+        public String getCmdDescription() {
+            return "irc login name";
+        }
+
+        @Override
+        public String getFileSettingsName() {
+            return "loginname";
+        }
+
+        @Override
+        public String getSettingsEntryName() {
+            return "loginname";
+        }
+
+        @Override
+        public void setValueOnSettings(Settings settings, SettingsEntry entry) {
+            settings.LOGINNAME = (String) entry.value;
+        }
+
+        @Override
+        public void validate(Validator validator, SettingsEntry entry) {
+            validator.validateLoginname(entry);
+        }
+    },
     CHANNEL {
         @Override
         public String getCmdOptName() {

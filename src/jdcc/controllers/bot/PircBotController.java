@@ -37,7 +37,7 @@ public class PircBotController extends AbstractController implements BotControll
     @Override
     public void handle(Connect connect) {
         kernel.connectToServer(connect.serverName, connect.port, connect.nickname,
-                connect.serverPassword);
+                connect.realname, connect.loginname, connect.serverPassword);
     }
 
     @Override

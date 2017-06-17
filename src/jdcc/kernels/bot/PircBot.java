@@ -43,12 +43,13 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     }
 
     @Override
-    public void connectToServer(String serverName, int serverPort, String nickname, String serverPassword)
+    public void connectToServer(String serverName, int serverPort, String nickname
+            , String realname, String loginname, String serverPassword)
     {
         JdccLogger.logger.debug(
-                "PircBot: connectToServer - name: {} password: {} port: {} nickname {}",
-                 serverName, serverPassword, serverPort, nickname);
-        configure(nickname, serverName, serverPassword);
+                "PircBot: connectToServer - name: {} password: {} port: {} nickname {} realname {}",
+                 serverName, serverPassword, serverPort, nickname, realname);
+        configure(nickname, realname, loginname, serverName, serverPassword);
         setListener();
         startBot();
     }
@@ -145,10 +146,12 @@ public class PircBot extends ListenerAdapter implements BotKernel {
     // IRC EVENT HANDLERS
 
     // METODI PRIVATI
-    private void configure(String nickname, String serverName, String serverPassword) {
-        // TODO: impostare gli altri nomi dell'utente.
+    private void configure(String nickname, String realname, String loginname
+            ,String serverName, String serverPassword) {
         pircBotConfigurationBuilder = new Configuration.Builder()
                 .setName(nickname)
+                .setRealName(realname)
+                .setLogin(loginname)
                 .setServerPassword(serverPassword)
                 .addServer(serverName);
         pircBotConfigurationBuilder.setBotFactory(new MyBotFactory());

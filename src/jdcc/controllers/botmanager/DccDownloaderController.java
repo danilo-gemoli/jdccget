@@ -82,7 +82,7 @@ public class DccDownloaderController extends AbstractController implements Manag
     @Override
     public void handle(ServerConnectionRequest connReq) {
         kernel.onServerConnectRequest(connReq.serverName, connReq.serverPassword
-            , connReq.port, connReq.nickname);
+            , connReq.port, connReq.nickname, connReq.realname, connReq.loginname);
     }
 
     @Override

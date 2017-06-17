@@ -14,6 +14,10 @@ public interface Validator {
 
     void validateNickname(SettingsEntry entry);
 
+    void validateRealname(SettingsEntry entry);
+
+    void validateLoginname(SettingsEntry entry);
+
     void validateChannel(SettingsEntry entry);
 
     void validateBotname(SettingsEntry entry);

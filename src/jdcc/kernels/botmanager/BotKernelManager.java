@@ -27,9 +27,11 @@ public interface BotKernelManager extends Kernel {
      * @param serverPassword
      * @param serverPort
      * @param nickname
+     * @param realname
+     * @param loginname
      */
     void onServerConnectRequest(String serverName, String serverPassword, int serverPort, String
-            nickname);
+            nickname, String realname, String loginname);
 
     /***
      * Richiede di unirsi ad un canale.

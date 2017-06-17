@@ -1,6 +1,7 @@
 package jdcc.kernels.bot;
 
 import jdcc.logger.JdccLogger;
+import org.pircbotx.User;
 import org.pircbotx.dcc.FileTransfer;
 import org.pircbotx.hooks.events.IncomingFileTransferEvent;
 
@@ -20,6 +21,12 @@ public class PircFileTransfer implements FileTransferConnection {
 
     public PircFileTransfer(IncomingFileTransferEvent fileTransferEvent) {
         this.fileTransferEvent = fileTransferEvent;
+    }
+
+    @Override
+    public String getUserNickname() {
+        User u = fileTransferEvent.getUser();
+        return u != null ? u.getNick() : "";
     }
 
     @Override
